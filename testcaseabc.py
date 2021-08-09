@@ -1,0 +1,53 @@
+
+from abc import ABC, abstractmethod
+
+from .grade import Grade
+from .visibility import VISIBLE, VISIBILITIES
+
+class Testcase(ABC):
+  '''
+  '''
+
+  def __init__(self,
+               name=None,
+               number=None,
+               max_score=0,
+               visibility=VISIBLE,
+               extra_credit=False,
+              ):
+    if name is not None and not isinstance(name, str):
+      raise ValueError
+    if visibility not in VISIBILITIES:
+      raise ValueError("visibility item invalid: "
+                       f"\"{visibility}\" not in {VISIBILITIES}")
+
+    self._name = name
+    self._number = number
+    self._max_score = max_score
+    self._visibility = visibility
+    self._extra_credit = extra_credit
+
+  @abstractmethod
+  def exec(self, max_score=None):
+    ''' self x (float)max_score -> float x U(None, str)
+        Abstract Method
+        Raises: NotImplementedError if not overridden
+        Run this Grade and produce a grade
+    '''
+    raise NotImplementedError('Missing Method Override?')
+
+  def grade(self):
+    ''' self -> Grade
+        Grade this test case
+    '''
+    score, output = self.exec(max_score=self._max_score)
+    return Grade(
+        score=score,
+        max_score=(0 if self._extra_credit else self._max_score),
+        name=self._name,
+        number=self._number,
+        output=output,
+        tags=None,
+        visibility=self._visibility,
+        extra_data=None,
+      )
