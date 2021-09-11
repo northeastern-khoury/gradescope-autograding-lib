@@ -57,9 +57,9 @@ class Tester:
       return Metadata.decod_json(json.load(mfp))
 
   def __init__(self, maintainer=None, metadata=None):
-    if maintainer = None:
+    if maintainer is None:
       maintainer = "Course Staff"
-    if metadata = None:
+    if metadata is None:
       metadata = PATH_METADATA
 
     self._maintainer = maintainer
