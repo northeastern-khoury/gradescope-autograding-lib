@@ -20,10 +20,16 @@ class Grade: #pylint:disable=R0902
                extra_data=None,
                **kwargs,
               ):
-    if score is not None and not isinstance(score, float):
+    if isinstance(score, int):
+      score = float(score)
+    elif score is not None and not isinstance(score, float):
       raise TypeError()
-    if max_score is not None and not isinstance(max_score, float):
+
+    if isinstance(max_score, int):
+      score = float(score)
+    elif max_score is not None and not isinstance(max_score, float):
       raise TypeError()
+
     if name is not None and not isinstance(name, str):
       raise TypeError()
     if tags is None:

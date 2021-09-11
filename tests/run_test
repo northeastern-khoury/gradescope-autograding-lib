@@ -1,0 +1,32 @@
+#!/usr/bin/env python3
+# PREREQ: Requires gradescope lib be on $PYTHONPATH
+
+import os
+from pathlib import Path
+import sys
+
+# Harness points gradescope lib to $PWD/autograder
+testdir = Path(os.getcwd()) / 'autograder'
+
+os.environ['PATH_CODE']     = str(testdir / 'submission')
+os.environ['PATH_RESULTS']  = str(testdir / 'results.json')
+os.environ['PATH_METADATA'] = str(testdir / 'example_metadata.json')
+
+# Functional section
+from gradescope import Tester
+
+tester = Tester()
+
+@tester.prerequisite()
+def dummy_prereq():
+  return
+
+@tester.testcase()
+def dummy_test():
+  return (1.0, 'no-op')
+
+if __name__ == '__main__':
+  tester.exec()
+  if tester.failed:
+    sys.exit(1)
+  print("Okay")

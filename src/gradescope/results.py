@@ -59,9 +59,6 @@ class Results:
     elif not isinstance(extra_data, dict):
       raise TypeError()
 
-    if len(kwargs) > 0:
-      warn(f"Unknown arg keys: {kwargs.keys()}")
-
     self._execution_time    = execution_time
     self._extra_data        = extra_data.copy()
     self._output            = output
@@ -89,7 +86,7 @@ class Results:
     self._start_time = time.time()
 
   def end_time(self):
-    if self._start_time is not None:
+    if self._start_time is None:
       raise RuntimeError("start_time() not yet called!")
     self._execution_time = time.time() - self._start_time
     self._start_time = None

@@ -42,8 +42,8 @@ class Metadata:
       raise TypeError("users not a list")
     if not all(map(lambda e: isinstance(e, User), users)):
       raise ValueError("Not all elements in users list User objects")
-    if previous_submissons is not None and not isinstance(previous_submissons, list):
-      raise TypeError("previous_submissons not a list")
+    if previous_submissions is not None and not isinstance(previous_submissions, list):
+      raise TypeError("previous_submissions not a list")
 
     self._id = subid
     self._created_at = created_at

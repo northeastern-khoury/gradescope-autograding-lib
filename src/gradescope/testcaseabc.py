@@ -11,12 +11,16 @@ class Testcase(ABC):
   def __init__(self,
                name=None,
                number=None,
-               max_score=0,
+               max_score=0.0,
                visibility=VISIBLE,
                extra_credit=False,
               ):
     if name is not None and not isinstance(name, str):
       raise ValueError
+    if isinstance(max_score, int):
+      score = float(score)
+    elif max_score is not None and not isinstance(max_score, float):
+      raise TypeError()
     if visibility not in VISIBILITIES:
       raise ValueError("visibility item invalid: "
                        f"\"{visibility}\" not in {VISIBILITIES}")

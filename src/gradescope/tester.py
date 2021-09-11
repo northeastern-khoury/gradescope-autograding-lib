@@ -4,10 +4,10 @@ import os
 import traceback
 
 from .metadata import Metadata
-from .paths import PATH_METADATA
+from .paths import PATH_METADATA, PATH_CODE
 from .results import Results
 from .testcaseabc import Testcase
-from .visibility import VISIBLE
+from .visibility import VISIBLE, HIDDEN, VISIBILITIES
 
 
 class PrereqError(RuntimeError):
@@ -28,10 +28,10 @@ class _FunctionTestcase(Testcase):
     self._func = func
     self._args = args
 
-  def exec(self, _max_score=None):
+  def exec(self, max_score=None):
     if self._args is None:
       return self._func()
-    self._func(*self._args)
+    return self._func(*self._args)
 
 class _FunctionPrereq(_FunctionTestcase):
   def __init__(self, func, optional=False, **kwargs):
@@ -41,7 +41,7 @@ class _FunctionPrereq(_FunctionTestcase):
 
   def exec(self, **kwargs):
     try:
-      super.exec(**kwargs)
+      super().exec(**kwargs)
     except PrereqError as exc:
       if self._optional:
         #TODO: Logging of some form
@@ -67,6 +67,7 @@ class Tester:
     self._metadata = Tester._load_metadata(metadata)
     self._prerequisites = []
     self._testcases = []
+    self._failed = False
 
   @property
   def metadata(self):
@@ -74,6 +75,10 @@ class Tester:
     if self._metadata is not None:
       return self._metadata
     raise ValueError()
+
+  @property
+  def failed(self):
+    return self._failed
 
   def prerequisite(self, **kwargs):
     ''' '''
@@ -111,11 +116,13 @@ class Tester:
         try:
           prereq.exec()
         except PrereqError as exc:
+          self._failed = True
           return Results(score=0,
                          output="".join(exc.args),
                          visibility=exc.visibility,
                         )
         except AssertionError as exc:
+          self._failed = True
           traceback.print_exc()
           return Results(score=0,
                          output=str(exc),
@@ -130,6 +137,7 @@ class Tester:
       res.end_time()
       return res
     except:
+      self._failed = True
       traceback.print_exc()
       return Results(score=0,
                      output="An internal error has occurred. " +
