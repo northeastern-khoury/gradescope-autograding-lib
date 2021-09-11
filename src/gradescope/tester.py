@@ -1,4 +1,8 @@
 
+import json
+import os
+import traceback
+
 from .paths import PATH_METADATA
 from .results import Results
 from .testcaseabc import Testcase
@@ -24,6 +28,8 @@ class _FunctionTestcase(Testcase):
     self._args = args
 
   def exec(self, _max_score=None):
+    if self._args is None:
+      return self._func()
     self._func(*self._args)
 
 class _FunctionPrereq(_FunctionTestcase):
@@ -37,7 +43,7 @@ class _FunctionPrereq(_FunctionTestcase):
       super.exec(**kwargs)
     except PrereqError as exc:
       if self._optional:
-        #TODO
+        #TODO: Logging of some form
         pass
       else:
         raise exc
@@ -48,10 +54,16 @@ class Tester:
   @staticmethod
   def _load_metadata(path):
     with open(path, 'r') as mfp:
-      pass
+      return Metadata.decod_json(json.load(mfp))
 
-  def __init__(self):
-    self._metadata = Tester._load_metadata(PATH_METADATA)
+  def __init__(self, maintainer=None, metadata=None):
+    if maintainer = None:
+      maintainer = "Course Staff"
+    if metadata = None:
+      metadata = PATH_METADATA
+
+    self._maintainer = maintainer
+    self._metadata = Tester._load_metadata(metadata)
     self._prerequisites = []
     self._testcases = []
 
@@ -91,7 +103,9 @@ class Tester:
 
   def exec(self):
     ''' '''
+    cwd = os.getcwd()
     try:
+      os.chdir(PATH_CODE)
       for prereq in self._prerequisites:
         try:
           prereq.exec()
@@ -101,15 +115,27 @@ class Tester:
                          visibility=exc.visibility,
                         )
         except AssertionError as exc:
-          return Results(
+          traceback.print_exc()
+          return Results(score=0,
+                         output=str(exc),
+                         visibility=VISIBLE,
+                         stdout_visibility=HIDDEN,
                         )
 
       res = Results()
+      res.start_time()
       for test in self._testcases:
-        try:
-          pass
-        except Exception as exc:
-          raise
+        res.add_test(test.grade())
+      res.end_time()
       return res
+    except:
+      traceback.print_exc()
+      return Results(score=0,
+                     output="An internal error has occurred. " +
+                            "Please reach out to " +
+                            self._maintainer +
+                            " for assistance.",
+                     stdout_visibility=HIDDEN,
+                    )
     finally:
-      self._metadata = None
+      os.chdir(cwd)

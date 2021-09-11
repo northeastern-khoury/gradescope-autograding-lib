@@ -27,6 +27,10 @@ class Testcase(ABC):
     self._visibility = visibility
     self._extra_credit = extra_credit
 
+  @property
+  def name(self):
+    return self._name
+
   @abstractmethod
   def exec(self, max_score=None):
     ''' self x (float)max_score -> float x U(None, str)
@@ -40,9 +44,9 @@ class Testcase(ABC):
     ''' self -> Grade
         Grade this test case
     '''
-    score, output = self.exec(max_score=self._max_score)
+    pct, output = self.exec(max_score=self._max_score)
     return Grade(
-        score=score,
+        score=pct * self._max_score,
         max_score=(0 if self._extra_credit else self._max_score),
         name=self._name,
         number=self._number,
