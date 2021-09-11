@@ -10,6 +10,7 @@ class Assignment:
                release_date=None,
                due_date=None,
                late_due_date=None,
+               outline=None,
                total_points=None,
                group_submission=None,
                group_size=None):
@@ -25,6 +26,8 @@ class Assignment:
       raise TypeError()
     if late_due_date is not None and not isinstance(late_due_date, datetime):
       raise TypeError()
+    if outline is not None and not isinstance(outline, list):
+      raise TypeError()
     if not isinstance(total_points, int) and not isinstance(total_points, float):
       raise TypeError()
     if not isinstance(group_submission, bool):
@@ -38,6 +41,7 @@ class Assignment:
     self._release_date = release_date
     self._due_date = due_date
     self._late_due_date = late_due_date
+    self._outline = outline
     self._total_points = total_points
     self._group_submission = group_submission
     self._group_size = group_size
@@ -51,6 +55,7 @@ class Assignment:
         "release_date":     self._release_date.isoformat(),
         "due_date":         self._due_date.isoformat(),
         "late_due_date":    self._late_due_date.isoformat(),
+        "outline":          self._outline,
         "total_points":     self._total_points,
         "group_submission": self._group_submission,
         "group_size":       self._group_size,
