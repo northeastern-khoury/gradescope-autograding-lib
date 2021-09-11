@@ -1,8 +1,7 @@
 
-from . import PATH_METADATA
-
-from .testcaseabc import Testcase
+from .paths import PATH_METADATA
 from .results import Results
+from .testcaseabc import Testcase
 from .visibility import VISIBLE
 
 
