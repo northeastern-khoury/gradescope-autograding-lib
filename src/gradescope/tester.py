@@ -107,8 +107,15 @@ class Tester:
         return func
     return _inner
 
+  def no_tests(self):
+    if len(self._testcases) > 0:
+      raise RuntimeError("Testcases already configured!")
+    self._testcases.append(_FunctionTestcase(lambda: (0.0, "Okay")))
+
   def exec(self):
     ''' '''
+    if len(self._testcases) == 0:
+      raise RuntimeError("No testcases configured?")
     cwd = os.getcwd()
     try:
       os.chdir(PATH_CODE)
