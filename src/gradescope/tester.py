@@ -3,6 +3,7 @@ import json
 import os
 import traceback
 
+from .metadata import Metadata
 from .paths import PATH_METADATA
 from .results import Results
 from .testcaseabc import Testcase
@@ -54,7 +55,7 @@ class Tester:
   @staticmethod
   def _load_metadata(path):
     with open(path, 'r') as mfp:
-      return Metadata.decod_json(json.load(mfp))
+      return Metadata.decode_json(json.load(mfp))
 
   def __init__(self, maintainer=None, metadata=None):
     if maintainer is None:
