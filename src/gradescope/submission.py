@@ -26,7 +26,7 @@ class Submission:
     return {
         "submission_time":  self._submission_time.isoformat(),
         "score":            self._score,
-        "results":          map(Results.encode_json, self._results),
+        "results":          list(map(Results.encode_json, self._results)),
     }
 
   @staticmethod
@@ -34,4 +34,4 @@ class Submission:
     ''' '''
     osv["submission_time"] = datetime.fromisoformat(osv["submission_time"])
     osv["results"] = Results.decode_json(osv["results"])
-    return osv
+    return Submission(**osv)
