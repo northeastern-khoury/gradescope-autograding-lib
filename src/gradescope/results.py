@@ -30,15 +30,17 @@ class Results:
     if not (output is None or isinstance(output, str)):
       raise TypeError()
 
-    if not (visibility is None or isinstance(visibility, str)):
-      raise TypeError()
-    if visibility not in VISIBILITIES:
-      raise ValueError()
+    if visibility is not None: 
+      if not isinstance(visibility, str):
+        raise TypeError("Visibility tag is neither None nor a string")
+      if visibility not in VISIBILITIES:
+        raise ValueError(f"Unknown visibility tag for 'visibility': \"{visibility}\"")
 
-    if not (stdout_visibility is None or isinstance(stdout_visibility, str)):
-      raise TypeError()
-    if stdout_visibility not in VISIBILITIES:
-      raise ValueError()
+    if stdout_visibility is not None:
+      if not isinstance(stdout_visibility, str):
+        raise TypeError("Stdout visibility tag is neither None nor a string")
+      if stdout_visibility not in VISIBILITIES:
+        raise ValueError(f"Unknown visibility tag for 'stdout_visibility': \"{visibility}\"")
 
     if tests is None:
       tests = []
