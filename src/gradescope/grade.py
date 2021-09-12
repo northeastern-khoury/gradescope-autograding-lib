@@ -18,7 +18,6 @@ class Grade: #pylint:disable=R0902
                tags=None,
                visibility=VISIBLE,
                extra_data=None,
-               **kwargs,
               ):
     if isinstance(score, int):
       score = float(score)
@@ -41,9 +40,6 @@ class Grade: #pylint:disable=R0902
                        f"\"{visibility}\" not in {VISIBILITIES}")
     if extra_data is None:
       extra_data = {}
-
-    if len(kwargs) > 0:
-      warn(f"Unknown arg keys: {kwargs.keys()}")
 
     self._score = score
     self._max_score = max_score

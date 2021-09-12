@@ -9,7 +9,7 @@ import sys
 testdir = Path(os.getcwd()) / 'autograder'
 
 os.environ['PATH_CODE']     = str(testdir / 'submission')
-os.environ['PATH_RESULTS']  = str(testdir / 'results.json')
+os.environ['PATH_RESULTS']  = os.devnull
 os.environ['PATH_METADATA'] = str(testdir / 'example_metadata.json')
 
 # Functional section
@@ -21,12 +21,11 @@ tester = Tester()
 def dummy_prereq():
   return
 
-@tester.testcase()
-def dummy_test():
-  return (1.0, 'no-op')
+tester.no_tests()
 
 if __name__ == '__main__':
-  tester.exec()
+  res = tester.exec()
   if tester.failed:
     sys.exit(1)
+  res.save()
   print("Okay")

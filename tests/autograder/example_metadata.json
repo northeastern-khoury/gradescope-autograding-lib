@@ -54,7 +54,13 @@
       "submission_time": "2021-09-10T18:20:07.128128-07:00",
       "score": "0.0",
       "results": {
-        "output": "The autograder failed to execute correctly. Contact your course staff for help in debugging this issue. Make sure to include a link to this page so that they can help you most effectively."
+        "score": 0,
+        "tests": [],
+        "output": "The autograder failed to execute correctly. Contact your course staff for help in debugging this issue. Make sure to include a link to this page so that they can help you most effectively.",
+        "extra_data": null,
+        "visibility": null,
+        "leaderboard": [],
+        "execution_time": null
       }
     }
   ]

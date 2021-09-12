@@ -50,25 +50,28 @@ class Results:
       raise TypeError()
 
     if leaderboard is None:
-      leaderboard = Leaderboard()
+      leaderboard = []
     elif isinstance(leaderboard, Leaderboard):
-      leaderboard = leaderboard.copy()
+      leaderboard = [leaderboard.copy()]
     else:
-      raise TypeError("leaderboard not a Leaderboard")
+      if any(not isinstance(e, Leaderboard) for e in leaderboard):
+        raise TypeError("leaderboard should be an array of Leaderboards")
+      leaderboard = [ e.copy() for e in leaderboard ]
 
     if extra_data is None:
       extra_data = {}
     elif not isinstance(extra_data, dict):
       raise TypeError()
 
-    self._execution_time    = execution_time
-    self._extra_data        = extra_data.copy()
-    self._output            = output
     self._score             = score
-    self._start_time        = None
-    self._stdout_visibility = stdout_visibility
-    self._tests             = tests
+    self._execution_time    = execution_time
+    self._output            = output
     self._visibility        = visibility
+    self._stdout_visibility = stdout_visibility
+    self._extra_data        = extra_data.copy()
+    self._tests             = tests
+    self._leaderboard       = leaderboard
+    self._start_time        = None
 
   @property
   def leaderboard(self):
@@ -106,13 +109,19 @@ class Results:
     if self._score is not None:
       s_obj["score"] = self._score
     if self._execution_time is not None:
-      s_obj["execution_time"] = self._execution_time
+      s_obj["execution_time"] = int(self._execution_time)
     if self._output is not None:
       s_obj["output"] = self._output
-    if self._tests is not None:
-      s_obj["tests"] = self._tests
+    if self._visibility is not None:
+      s_obj["visibility"] = self._visibility
+    if self._stdout_visibility is not None:
+      s_obj["stdout_visibility"] = self._stdout_visibility
     if len(self._extra_data) > 0:
       s_obj["extra_data"] = self._extra_data
+    if self._tests is not None:
+      s_obj["tests"] = self._tests
+    if len(self._leaderboard) > 0:
+      s_obj["leaderboard"] = self._leaderboard
 
     return s_obj
 
@@ -127,4 +136,6 @@ class Results:
   def decode_json(osv):
     '''
     '''
+    if "leaderboard" in osv: 
+      osv["leaderboard"] = list(map(Leaderboard.decode_json, osv["leaderboard"]))
     return Results(**osv)
