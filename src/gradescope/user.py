@@ -8,16 +8,19 @@ class User:
                name=None,
                sid=None,
                overrides=None):
-    if not isinstance(uid, int):
-      raise TypeError()
+    try:
+      uid = int(uid)
+    except Exception as exc:
+      raise TypeError("UID could not be coerced to int") from exc
+
     if not isinstance(email, str):
-      raise TypeError()
+      raise TypeError("Email is not a str")
     if not isinstance(name, str):
-      raise TypeError()
+      raise TypeError("Name is not a str")
     if sid is not None and not isinstance(sid, str):
-      raise TypeError()
+      raise TypeError("SID is neither None or a str")
     if overrides is not None and not isinstance(overrides, dict):
-      raise TypeError()
+      raise TypeError("overrides is neither None or a dict")
 
     self._id = uid
     self._email = email

@@ -14,26 +14,42 @@ class Assignment:
                total_points=None,
                group_submission=None,
                group_size=None):
-    if asgnid is None and not isinstance(asgnid, int):
-      raise TypeError()
-    if not isinstance(course_id, int):
-      raise TypeError()
+    if asgnid is None:
+      try:
+        asgnid = int(asgnid)
+      except Exception as exc:
+        raise TypeError("Could not coerce asgnid to int")
+
+    if course_id is not None:
+      try:
+        course_id = int(course_id)
+      except Exception as exc:
+        raise TypeError("Could not coerce course_id to int")
+
+    if total_points is not None:
+      try:
+        total_points = float(total_points)
+      except Exception as exc:
+        raise TypeError("Could not coerce total_points to float")
+
+    if group_size is not None:
+      try:
+        group_size = int(group_size)
+      except Exception as exc:
+        raise TypeError("Could not coerce group_size to int")
+
     if not isinstance(title, str):
-      raise TypeError()
+      raise TypeError("title is not a str")
     if not isinstance(release_date, datetime):
-      raise TypeError()
+      raise TypeError("release_date is not a datetime")
     if not isinstance(due_date, datetime):
-      raise TypeError()
+      raise TypeError("due_date is not a datetime")
     if late_due_date is not None and not isinstance(late_due_date, datetime):
-      raise TypeError()
+      raise TypeError("late_due_date is neither None or a datetime")
     if outline is not None and not isinstance(outline, list):
-      raise TypeError()
-    if not isinstance(total_points, int) and not isinstance(total_points, float):
-      raise TypeError()
+      raise TypeError("outline is neither None nor a list")
     if not isinstance(group_submission, bool):
-      raise TypeError()
-    if group_size is not None and not isinstance(group_size, int):
-      raise TypeError()
+      raise TypeError("group_submission is not a bool")
 
     self._id = asgnid
     self._course_id = course_id

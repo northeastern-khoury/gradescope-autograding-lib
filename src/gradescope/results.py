@@ -21,14 +21,20 @@ class Results:
                stdout_visibility=HIDDEN,
                tests=None,
                leaderboard=None,
-               extra_data=None,
+               extra_data=None
               ):
-    if not (score is None or isinstance(score, (int, float))):
-      raise TypeError()
-    if not (execution_time is None or isinstance(execution_time, int)):
-      raise TypeError()
+    if score is not None:
+      try:
+        score = float(score)
+      except Exception as exc:
+        raise TypeError("score is none of None, an int, or a float") from exc
+    if execution_time is not None:
+      try:
+        execution_time = int(execution_time)
+      except Exception as exc:
+        raise TypeError("execution_time is none of None, an int, or a float") from exc
     if not (output is None or isinstance(output, str)):
-      raise TypeError()
+      raise TypeError("output is neither None nor a str")
 
     if visibility is not None: 
       if not isinstance(visibility, str):
@@ -47,7 +53,7 @@ class Results:
     elif isinstance(tests, list):
       tests = tests.copy()
     else:
-      raise TypeError()
+      raise TypeError("tests is neither None nor a list")
 
     if leaderboard is None:
       leaderboard = []
@@ -61,7 +67,7 @@ class Results:
     if extra_data is None:
       extra_data = {}
     elif not isinstance(extra_data, dict):
-      raise TypeError()
+      raise TypeError("extra_data is neitehr None nor a dict")
 
     self._score             = score
     self._execution_time    = execution_time
@@ -109,7 +115,7 @@ class Results:
     if self._score is not None:
       s_obj["score"] = self._score
     if self._execution_time is not None:
-      s_obj["execution_time"] = int(self._execution_time)
+      s_obj["execution_time"] = self._execution_time
     if self._output is not None:
       s_obj["output"] = self._output
     if self._visibility is not None:

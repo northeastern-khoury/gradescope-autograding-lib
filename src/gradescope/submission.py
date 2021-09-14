@@ -10,12 +10,14 @@ class Submission:
                submission_time=None,
                score=None,
                results=None):
+    try:
+      score = float(score)
+    except Exception as exc:
+      raise TypeError("score could not be coerced to float") from exc
     if not isinstance(submission_time, datetime):
-      raise TypeError()
-    if not isinstance(score, float):
-      raise TypeError()
+      raise TypeError("submission_time not a datetime")
     if not isinstance(results, Results):
-      raise TypeError()
+      raise TypeError("results is not a Results object")
 
     self._submission_time = submission_time
     self._score = score

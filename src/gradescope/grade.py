@@ -19,22 +19,24 @@ class Grade: #pylint:disable=R0902
                visibility=VISIBLE,
                extra_data=None,
               ):
-    if isinstance(score, int):
-      score = float(score)
-    elif score is not None and not isinstance(score, float):
-      raise TypeError()
+    if score is not None:
+      try:
+        score = float(score)
+      except Exception as exc:
+        raise TypeError()
 
-    if isinstance(max_score, int):
-      score = float(score)
-    elif max_score is not None and not isinstance(max_score, float):
-      raise TypeError()
+    if max_score is not None:
+      try:
+        max_score = float(max_score)
+      except Exception as exc:
+        raise TypeError()
 
     if name is not None and not isinstance(name, str):
-      raise TypeError()
+      raise TypeError("name is neiter None nor a str")
     if tags is None:
       tags = []
     if not isinstance(visibility, str):
-      raise TypeError()
+      raise TypeError("visibility is not a str")
     if visibility not in VISIBILITIES:
       raise ValueError("visibility item invalid: "
                        f"\"{visibility}\" not in {VISIBILITIES}")

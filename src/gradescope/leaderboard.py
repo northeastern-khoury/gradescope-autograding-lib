@@ -9,9 +9,9 @@ class _LeaderboardElem:
                value=None,
                order=ORDER_DESCENDING):
     if not isinstance(order, str):
-      raise TypeError()
+      raise TypeError("order not a str")
     if order not in (ORDER_ASCENDING, ORDER_DESCENDING):
-      raise ValueError()
+      raise ValueError(f"Unknown value for order: \"{order}\"")
     self._value = value
     self._order = order
 
