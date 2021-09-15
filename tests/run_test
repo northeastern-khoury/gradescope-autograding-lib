@@ -13,13 +13,13 @@ os.environ['PATH_RESULTS']  = os.devnull
 os.environ['PATH_METADATA'] = str(testdir / 'example_metadata.json')
 
 # Functional section
-from gradescope import Tester
+from gradescope import PrereqError, Tester
 
 tester = Tester()
 
 @tester.prerequisite()
 def dummy_prereq():
-  return
+  _ = PrereqError("Nope", std_out="Still Nothing")
 
 tester.no_tests()
 

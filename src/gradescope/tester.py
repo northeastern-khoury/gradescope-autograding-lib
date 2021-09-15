@@ -1,6 +1,7 @@
 
 import json
 import os
+import sys
 import traceback
 
 from .metadata import Metadata
@@ -11,13 +12,23 @@ from .visibility import VISIBLE, HIDDEN, VISIBILITIES
 
 
 class PrereqError(RuntimeError):
-  def __init__(self, *args, visibility=VISIBLE, **kwargs):
-    super().__init__(*args, **kwargs)
+  def __init__(self, *args, std_out=None, visibility=VISIBLE, stdout_visibility=HIDDEN):
+    super().__init__(*args)
     self._visibility = visibility
+    self._stdout = std_out
+    self._stdout_visibility = stdout_visibility
 
   @property
   def visibility(self):
     return self._visibility
+
+  @property
+  def std_out(self):
+    return self._stdout
+
+  @property
+  def stdout_visibility(self):
+    return self._stdout_visibility
 
 class _FunctionTestcase(Testcase):
   def __init__(self, func, args=None, **kwargs):
@@ -112,6 +123,27 @@ class Tester:
       raise RuntimeError("Testcases already configured!")
     self._testcases.append(_FunctionTestcase(lambda: (0.0, "Okay")))
 
+  def _handle_exec_failure(self,
+                           output,
+                           exc=None,
+                           std_out=None,
+                           stdout_visibility=HIDDEN,
+                           visibility=VISIBLE,
+                          ):
+    ''' Helper function for Exec to simplify exception handling '''
+    self._failed = True
+    if std_out is not None:
+      print(std_out)
+    if exc is not None:
+      traceback.print_exception(type(exc), exc, exc.__traceback__)
+    elif sys.exc_info()[0] is None:
+      traceback.print_exc()
+    return Results(score=0,
+                   output=output,
+                   visibility=visibility,
+                   stdout_visibility=stdout_visibility,
+                  )
+
   def exec(self):
     ''' '''
     if len(self._testcases) == 0:
@@ -119,23 +151,19 @@ class Tester:
     cwd = os.getcwd()
     try:
       os.chdir(PATH_CODE)
+
       for prereq in self._prerequisites:
         try:
           prereq.exec()
         except PrereqError as exc:
-          self._failed = True
-          return Results(score=0,
-                         output="".join(exc.args),
-                         visibility=exc.visibility,
-                        )
+          return self._handle_exec_failure("".join(exc.args),
+                                           exc=exc,
+                                           std_out=exc.std_out,
+                                           visibility=exc.visibility,
+                                           stdout_visibility=exc.stdout_visibility,
+                                           )
         except AssertionError as exc:
-          self._failed = True
-          traceback.print_exc()
-          return Results(score=0,
-                         output=str(exc),
-                         visibility=VISIBLE,
-                         stdout_visibility=HIDDEN,
-                        )
+          return self._handle_exec_failure(str(exc))
 
       res = Results()
       res.start_time()
