@@ -130,14 +130,13 @@ class Tester:
                            stdout_visibility=HIDDEN,
                            visibility=VISIBLE,
                           ):
-    ''' Helper function for Exec to simplify exception handling '''
+    ''' Helper function for exec to simplify exception handling '''
     self._failed = True
     if std_out is not None:
       print(std_out)
     if exc is not None:
+      print("\n\n===== DEBUG TRACE FOR COURSE STAFF =====")
       traceback.print_exception(type(exc), exc, exc.__traceback__)
-    elif sys.exc_info()[0] is None:
-      traceback.print_exc()
     return Results(score=0,
                    output=output,
                    visibility=visibility,
@@ -157,13 +156,13 @@ class Tester:
           prereq.exec()
         except PrereqError as exc:
           return self._handle_exec_failure("".join(exc.args),
-                                           exc=exc,
                                            std_out=exc.std_out,
                                            visibility=exc.visibility,
                                            stdout_visibility=exc.stdout_visibility,
-                                           )
+                                          )
         except AssertionError as exc:
-          return self._handle_exec_failure(str(exc))
+          return self._handle_exec_failure(str(exc),
+                                           exc=exc)
 
       res = Results()
       res.start_time()

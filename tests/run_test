@@ -21,7 +21,14 @@ tester = Tester()
 def dummy_prereq():
   _ = PrereqError("Nope", std_out="Still Nothing")
 
-tester.no_tests()
+@tester.testcase(
+  name="Eval",
+  number="1.0",
+  max_score=1,
+)
+def dummy_test():
+  return (1.0, "Okay")
+
 
 if __name__ == '__main__':
   res = tester.exec()

@@ -18,7 +18,7 @@ class Testcase(ABC):
     if name is not None and not isinstance(name, str):
       raise ValueError
     if isinstance(max_score, int):
-      score = float(score)
+      max_score = float(max_score)
     elif max_score is not None and not isinstance(max_score, float):
       raise TypeError()
     if visibility not in VISIBILITIES:
