@@ -2,11 +2,13 @@
 import json
 import time
 
+from . import paths
+
 from .grade import Grade
 from .json import JSONEncoder
 from .leaderboard import Leaderboard
-from .paths import PATH_RESULTS
 from .visibility import HIDDEN, VISIBLE, VISIBILITIES
+
 
 class Results:
   ''' class Results
@@ -36,7 +38,7 @@ class Results:
     if not (output is None or isinstance(output, str)):
       raise TypeError("output is neither None nor a str")
 
-    if visibility is not None: 
+    if visibility is not None:
       if not isinstance(visibility, str):
         raise TypeError("Visibility tag is neither None nor a string")
       if visibility not in VISIBILITIES:
@@ -69,14 +71,15 @@ class Results:
     elif not isinstance(extra_data, dict):
       raise TypeError("extra_data is neitehr None nor a dict")
 
-    self._score             = score
-    self._execution_time    = execution_time
-    self._output            = output
-    self._visibility        = visibility
-    self._stdout_visibility = stdout_visibility
     self._extra_data        = extra_data.copy()
-    self._tests             = tests
+    self._execution_time    = execution_time
     self._leaderboard       = leaderboard
+    self._output            = output
+    self._score             = score
+    self._stdout_visibility = stdout_visibility
+    self._tests             = tests
+    self._visibility        = visibility
+
     self._start_time        = None
 
   @property
@@ -102,10 +105,15 @@ class Results:
     self._execution_time = time.time() - self._start_time
     self._start_time = None
 
-  def add_test(self, res):
-    if not isinstance(res, Grade):
-      raise TypeError()
-    self._tests.append(res)
+  def add_tests(self, res):
+    if not isinstance(res, list):
+      if hasattr(res, '__iter__'):
+        res = list(res)
+      else:
+        res = [ res ]
+    if any(map(lambda g: not isinstance(g, Grade), res)):
+      raise TypeError("res is not a Result or Iterable of Results")
+    self._tests += res
 
   def encode_json(self):
     '''
@@ -135,7 +143,7 @@ class Results:
     ''' save : self -> None
         EFFECT: Writes this object as a json object to drive at .paths.PATH_RESULTS
     '''
-    with open(PATH_RESULTS, 'w') as rfp:
+    with open(paths.PATH_RESULTS, 'w') as rfp:
       json.dump(self, rfp, cls=JSONEncoder)
 
   @staticmethod

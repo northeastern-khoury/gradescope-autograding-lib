@@ -54,38 +54,7 @@
       "submission_time": "2021-09-10T18:20:07.128128-07:00",
       "score": "0.0",
       "results": {
-        "score": 0,
-        "tests": [],
-        "output": "The autograder failed to execute correctly. Contact your course staff for help in debugging this issue. Make sure to include a link to this page so that they can help you most effectively.",
-        "extra_data": null,
-        "visibility": null,
-        "leaderboard": [],
-        "execution_time": null
-      }
-    },
-    {
-      "submission_time": "2021-09-13T16:27:33.961151-07:00",
-      "score": "0.0",
-      "results": {
-        "score": null,
-        "tests": [
-          {
-            "name": null,
-            "tags": null,
-            "score": 0,
-            "number": null,
-            "output": "Okay",
-            "max_score": 0,
-            "extra_data": null,
-            "visibility": "visible"
-          }
-        ],
-        "output": null,
-        "extra_data": null,
-        "visibility": "visible",
-        "leaderboard": [],
-        "execution_time": 0,
-        "stdout_visibility": "hidden"
+        "output": "The autograder failed to execute correctly. Contact your course staff for help in debugging this issue. Make sure to include a link to this page so that they can help you most effectively."
       }
     }
   ]

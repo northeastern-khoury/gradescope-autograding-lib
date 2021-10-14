@@ -52,10 +52,10 @@ class Grade: #pylint:disable=R0902
     self._visibility = visibility
     self._extra_data = extra_data
 
-  def __getitem__(self, name):
-    if name in self._extra_data:
-      return self._extra_data[name]
-    raise AttributeError(f"No extra data with key \"{name}\"")
+  def __getitem__(self, key):
+    if key in self._extra_data:
+      return self._extra_data[key]
+    raise KeyError(f"No extra data with key \"{key}\"")
 
   def __setitem__(self, name, val):
     self._extra_data[name] = val
