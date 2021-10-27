@@ -2,6 +2,8 @@
 import json
 import time
 
+from contextlib import AbstractContextManager
+
 from . import paths
 
 from .grade import Grade
@@ -9,6 +11,17 @@ from .json import JSONEncoder
 from .leaderboard import Leaderboard
 from .visibility import HIDDEN, VISIBLE, VISIBILITIES
 
+
+class _ResultTimer(AbstractContextManager):
+  def __init__(self, target, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._res = target
+
+  def __enter__(self):
+    self._res.start_time()
+
+  def __exit__(self, *_exc):
+    self._res.end_time()
 
 class Results:
   ''' class Results
@@ -85,6 +98,10 @@ class Results:
   @property
   def leaderboard(self):
     return self._leaderboard
+
+  @property
+  def timer_context(self):
+    return _ResultTimer(self)
 
   def __getitem__(self, name):
     if name in self._extra_data:

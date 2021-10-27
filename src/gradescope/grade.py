@@ -23,13 +23,13 @@ class Grade: #pylint:disable=R0902
       try:
         score = float(score)
       except Exception as exc:
-        raise TypeError()
+        raise TypeError() from exc
 
     if max_score is not None:
       try:
         max_score = float(max_score)
       except Exception as exc:
-        raise TypeError()
+        raise TypeError() from exc
 
     if name is not None and not isinstance(name, str):
       raise TypeError("name is neiter None nor a str")
@@ -80,6 +80,21 @@ class Grade: #pylint:disable=R0902
     if score > self._max_score:
       warn(f"Assigned score for {self._name} greater than max"
            f"({score:.2d} > {self._max_score}")
+
+  @property
+  def output(self):
+    ''' self -> str
+        Return the current output
+    '''
+    return self._output
+
+  @output.setter
+  def output(self, output):
+    ''' self x str -> None
+        Raises: TypeError if score is not str
+        Stores the new output
+    '''
+    self._output = output
 
   @property
   def max_score(self):

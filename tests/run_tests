@@ -15,6 +15,8 @@ def main():
   gradescope = None
   failures = 0
 
+  sys.path.insert(1, str(Path(os.path.dirname(__file__)).resolve().parent / "src"))
+
   for testdir in sorted(filter(os.path.isdir, os.listdir())):
     # Point gradescope lib to the current test case
     os.environ['AUTOGRADER_ROOT'] = os.path.abspath(testdir)

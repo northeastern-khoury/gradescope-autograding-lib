@@ -1,10 +1,11 @@
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from contextlib import AbstractContextManager
 
 from .error import PrereqError
 
 
-class Prereq(ABC):
+class Prereq(AbstractContextManager):
   '''
   '''
 

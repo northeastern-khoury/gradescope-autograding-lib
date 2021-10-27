@@ -2,16 +2,17 @@
 import json
 import traceback
 
-from . import paths
+from contextlib import ExitStack
 
-from .context import ChDir, ListContext
-from .file_util import InstructorFiles
-from .group import Group
-from .metadata import Metadata
-from .prereq import FunctionPrereq, Prereq, PrereqError
-from .results import Results
-from .testcase import FunctionTestcase
-from .visibility import VISIBLE, HIDDEN
+from .. import paths
+
+from ..context import ChDir
+from ..file_util import InstructorFiles
+from ..metadata import Metadata
+from ..prereq import FunctionPrereq, Prereq, PrereqError
+from ..results import Results
+from ..testcase import FunctionTestcase, TestcaseGroup
+from ..visibility import VISIBLE, HIDDEN
 
 
 class Tester:
@@ -22,7 +23,7 @@ class Tester:
     with open(path, 'r') as mfp:
       return Metadata.decode_json(json.load(mfp))
 
-  def __init__(self, maintainer=None, metadata=None):
+  def __init__(self, maintainer=None, metadata=None, skip_instructor_files=False):
     if maintainer is None:
       maintainer = "Course Staff"
     if metadata is None:
@@ -35,7 +36,7 @@ class Tester:
     self._callable_map = {}
     self._failed = False
 
-    if paths.PATH_INSTRUCTOR_FILES.is_dir():
+    if not skip_instructor_files and paths.PATH_INSTRUCTOR_FILES.is_dir():
       self.prerequisite(InstructorFiles(cleanup=True))
 
   def __str__(self):
@@ -73,11 +74,15 @@ class Tester:
         name = str(func)
       else:
         name = hex(id(func))
-      if name in self._callable_map:
-        raise ValueError(f"Namespace Collision: {name}")
+
       grdr = hook(func)
       target.append(grdr)
-      self._callable_map[name] = grdr
+      if name not in self._callable_map:
+        self._callable_map[name] = grdr
+      else:
+        if not isinstance(self._callable_map[name], list):
+          self._callable_map[name] = [self._callable_map[name]]
+        self._callable_map[name].append(grdr)
       return grdr
     return _inner
 
@@ -102,7 +107,9 @@ class Tester:
       if len(kwargs) > 0:
         raise ValueError("Joint use of Vec with single spec def")
       func =  self._new_callable(self._testcases,
-                                 hook=lambda f: Group( *(FunctionTestcase(f, **spec) for spec in vec) ))
+                                 hook=lambda f: TestcaseGroup(
+                                  *(FunctionTestcase(f, **spec) for spec in vec)
+                                ))
     if len(args) == 0:
       return func
     return func(*args)
@@ -142,16 +149,16 @@ class Tester:
     if len(self._testcases) == 0:
       raise RuntimeError("No testcases configured?")
 
+    res = Results()
     context = self._prerequisites.copy()
     context.insert(0, ChDir(paths.PATH_CODE))
+    context.append(res.timer_context)
     try:
-      with ListContext(context):
-        res = Results()
-        res.start_time()
+      with ExitStack() as stack:
+        for ccm in context:
+          stack.enter_context(ccm)
         for test in self._testcases:
-          res.add_tests(test.grade())
-        res.end_time()
-        return res
+          test.exec(res)
     except PrereqError as exc:
       return self._handle_exec_failure("".join(exc.args),
                                        stdout=exc.stdout,
@@ -171,3 +178,4 @@ class Tester:
                             " for assistance.",
                      stdout_visibility=HIDDEN,
                     )
+    return res

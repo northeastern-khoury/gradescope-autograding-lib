@@ -2,7 +2,10 @@
 from ..visibility import HIDDEN, VISIBLE, VISIBILITIES
 
 class PrereqError(RuntimeError):
-  def __init__(self, *args, stdout=None, visibility=VISIBLE, stdout_visibility=HIDDEN, **kwargs):
+  def __init__(self,
+               *args,
+               output=None, stdout=None, visibility=VISIBLE, stdout_visibility=HIDDEN,
+               **kwargs):
     super().__init__(*args, **kwargs)
 
     if visibility not in VISIBILITIES:
@@ -10,6 +13,7 @@ class PrereqError(RuntimeError):
     if stdout_visibility not in VISIBILITIES:
       raise ValueError(f"Unknown visibility \"{stdout_visibility}\" for key 'visibility'")
 
+    self._output = output
     self._stdout = str(stdout)
     self._stdout_visibility = stdout_visibility
     self._visibility = visibility
