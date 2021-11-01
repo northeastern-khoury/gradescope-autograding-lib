@@ -38,6 +38,7 @@ class Tester:
 
     if not skip_instructor_files and paths.PATH_INSTRUCTOR_FILES.is_dir():
       self.prerequisite(InstructorFiles(cleanup=True))
+    self.prerequisite(ChDir(paths.PATH_CODE))
 
   def __str__(self):
     return " ".join(["Tester{{",
@@ -91,12 +92,14 @@ class Tester:
     def _hook(func):
       if not isinstance(func, Prereq):
         if not callable(func):
-          raise TypeError
+          raise TypeError("Inner value on .prerequisite call is not callable")
         func = FunctionPrereq(func, **kwargs)
       return func
     inner = self._new_callable(self._prerequisites, hook=_hook)
     if len(args) == 0:
       return inner
+    if len(kwargs) > 0:
+      raise ValueError("kwargs passed to prerequisite call with built Prereq")
     return inner(*args)
 
   def testcase(self, *args, vec=None, **kwargs):
