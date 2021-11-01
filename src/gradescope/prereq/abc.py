@@ -28,11 +28,9 @@ class Prereq(AbstractContextManager):
     try:
       self._cleanup = self.exec()
     except PrereqError as exc:
-      if self._optional:
-        #TODO: Logging of some form
-        pass
-      else:
+      if not self._optional:
         raise exc
+      print(exc.stdout)
     return self
 
   def __exit__(self, exc_type, exc_cal, exc_tb):
