@@ -6,8 +6,7 @@ from contextlib import ExitStack
 
 from .. import paths
 
-from ..context import ChDir
-from ..file_util import InstructorFiles
+from ..file_util import ChDir, InstructorFiles
 from ..metadata import Metadata
 from ..prereq import FunctionPrereq, Prereq, PrereqError
 from ..results import Results
