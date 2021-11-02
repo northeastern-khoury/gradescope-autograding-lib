@@ -11,11 +11,7 @@ class ChDir(Prereq):
     super().__init__(**kwargs)
     if not isinstance(fdir, (str, Path)):
       raise TypeError(f"Given directory is neither a string or a Path: {type(fdir)}")
-    fdir = Path(fdir)
-    if not fdir.is_dir():
-      raise RuntimeError(f"No such dir `{fdir}`; we see: {os.listdir()}")
-
-    self._path = fdir
+    self._path = Path(fdir)
     self._cwd = None
 
   @property
@@ -27,6 +23,8 @@ class ChDir(Prereq):
     self._cwd = None
 
   def exec(self):
+    if not self._path.is_dir():
+      raise RuntimeError(f"No such dir `{self._path}`; we see: {os.listdir()}")
     self._cwd = os.getcwd()
     os.chdir(self._path)
     return self._do_cleanup

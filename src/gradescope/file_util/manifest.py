@@ -16,7 +16,7 @@ class Manifest(Prereq):
     # print(f"Manifest.exec({self._manifest})")
     missing = list(filter((lambda fname: not os.path.isfile(fname)), self._manifest))
     if len(missing) > 0:
-      list_missing = ', '.join(map(lambda e: f"{e}", missing))
+      list_missing = ', '.join(map(lambda e: f"'{e}'", missing))
       output = f"Your submission appears to be missing the files {list_missing}\n" \
                f"We see: {os.listdir()}"
       raise PrereqError(output)

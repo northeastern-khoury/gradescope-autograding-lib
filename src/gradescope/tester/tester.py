@@ -10,7 +10,7 @@ from ..file_util import ChDir, InstructorFiles
 from ..metadata import Metadata
 from ..prereq import FunctionPrereq, Prereq, PrereqError
 from ..results import Results
-from ..testcase import FunctionTestcase, TestcaseGroup
+from ..testcase import Testcase, FunctionTestcase, TestcaseGroup
 from ..visibility import VISIBLE, HIDDEN
 
 
@@ -103,8 +103,13 @@ class Tester:
 
   def testcase(self, *args, vec=None, **kwargs):
     ''' '''
-    func = self._new_callable(self._testcases,
-                              hook=lambda f: FunctionTestcase(f, **kwargs))
+    def _hook(func):
+      if not isinstance(func, Testcase):
+        if not callable(func):
+          raise TypeError("Inner value on .prerequisite call is not callable")
+        func = FunctionPrereq(func, **kwargs)
+      return func
+    func = self._new_callable(self._testcases, hook=_hook)
     if vec is not None:
       if len(kwargs) > 0:
         raise ValueError("Joint use of Vec with single spec def")
