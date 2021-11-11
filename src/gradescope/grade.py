@@ -74,8 +74,8 @@ class Grade: #pylint:disable=R0902
                 UserWarning if warnings enabled and score > max_score
         Validate and store the current score
     '''
-    if not isinstance(score, float):
-      raise TypeError("Score type not float")
+    if not isinstance(score, (int, float)):
+      raise TypeError("Score type not int or float")
     self._score = score
     if score > self._max_score:
       warn(f"Assigned score for {self._name} greater than max"
@@ -102,6 +102,16 @@ class Grade: #pylint:disable=R0902
         Get the max score for this Grade
     '''
     return self._max_score
+
+  @max_score.setter
+  def max_score(self, max_score):
+    ''' self x float -> None
+        Raises: TypeError if max_score not float
+        Validate and store the current max_score
+    '''
+    if not isinstance(max_score, (int, float)):
+      raise TypeError("Score type not int or float")
+    self._max_score = max_score
 
   def encode_json(self):
     ''' self -> dict
