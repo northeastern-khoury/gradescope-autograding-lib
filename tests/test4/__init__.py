@@ -13,7 +13,7 @@ NAMES = ["World", "Gradescope", "Tester", "Failure"]
 
 tester = Tester(skip_instructor_files=True)
 tester.prerequisite(ChDir('sub_dir'))
-tester.prerequisite(InstructorFiles())
+tester.prerequisite(InstructorFiles(cleanup=False))
 tester.prerequisite(Manifest('main.c'))
 tester.prerequisite(Make('all', clean_after=True))
 tester.prerequisite(ExecutableFile('main'))

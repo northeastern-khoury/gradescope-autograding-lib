@@ -29,12 +29,12 @@ class InstructorFiles(Prereq):
     self._dst = dst
     self._root_dirs = []
     self._root_files = []
+    self._temp_dir = None
 
   def _do_cleanup(self):
-    for fdir in self._root_dirs:
-      shutil.rmtree(fdir)
-    for file in self._root_files:
-      os.remove(file)
+    shutil.rmtree(self._dst)
+    shutil.move(self._temp_dir, self._dst)
+    self._temp_dir = None
 
   def exec(self):
     # print(f"InstructorFiles.exec(src={self._src}, dst={self._dst})")
@@ -42,6 +42,9 @@ class InstructorFiles(Prereq):
       self._src = paths.PATH_INSTRUCTOR_FILES
     if self._dst is None:
       self._dst = Path(os.getcwd())
+    if self._cleanup:
+      self._temp_dir = "/tmp/submission_backup"
+      shutil.copytree(self._dst, self._temp_dir)
 
     for src_root, dirs, files in os.walk(self._src):
       dst_root = Path(re.sub(f'^{self._src}', str(self._dst), src_root))
@@ -55,4 +58,6 @@ class InstructorFiles(Prereq):
         shutil.copyfile(src_root / file, dst_root / file)
         if src_root == self._src:
           self._root_files.append(dst_root / file)
-    return self._do_cleanup
+
+    if self._cleanup:
+      return self._do_cleanup
