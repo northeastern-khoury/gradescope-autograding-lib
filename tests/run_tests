@@ -32,7 +32,8 @@ def main():
       gradescope.paths.reload()
 
     # Load Testcase
-    tester = importlib.import_module(testdir).tester
+    unit = importlib.import_module(testdir)
+    tester = unit.tester
 
     # Functional section
     tester.exec().save()
@@ -48,6 +49,13 @@ def main():
       print(f"[OKAY] {testdir}")
       os.remove(os.environ['PATH_RESULTS'])
     print("---\n")
+
+    if hasattr(unit, "post_test"):
+      try:
+        unit.post_test()
+      except AssertionError as exc:
+        print(f"[FAIL] ")
+        print(f"    Postcondition Exception: {exc}")
 
   if failures != 0:
     sys.exit(1)
