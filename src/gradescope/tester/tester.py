@@ -64,17 +64,21 @@ class Tester:
   def failed(self):
     return self._failed
 
+  @staticmethod
+  def _callable_str(func):
+    if hasattr(func, '__name__'):
+      return ( func.__name__ + f" {hex(id(func))}"
+               if func.__name__ == "<lambda>" else
+               func.__name__
+             )
+    elif hasattr(func, '__str__'):
+      return str(func)
+    return hex(id(func))
+
   def _new_callable(self, target, hook=(lambda e: e)):
     def _inner(func):
-      if hasattr(func, '__name__'):
-        name = func.__name__
-        if name == "<lambda>":
-          name += f" {hex(id(func))}"
-      elif hasattr(func, '__str__'):
-        name = str(func)
-      else:
-        name = hex(id(func))
-
+      nid = "prereq" if target == self._prerequisites else "test"
+      name = Tester._callable_str(func)
       grdr = hook(func)
       target.append(grdr)
       if name not in self._callable_map:
@@ -86,39 +90,39 @@ class Tester:
       return grdr
     return _inner
 
-  def prerequisite(self, *args, **kwargs):
-    ''' '''
+  @staticmethod
+  def _gen_hook(innerc, name, **kwargs):
     def _hook(func):
       if not isinstance(func, Prereq):
         if not callable(func):
-          raise TypeError("Inner value on .prerequisite call is not callable")
-        func = FunctionPrereq(func, **kwargs)
+          raise TypeError(f"Inner value on .{name} call is not callable")
+        func = innerc(func, **kwargs)
       return func
-    inner = self._new_callable(self._prerequisites, hook=_hook)
+    return _hook
+
+  def prerequisite(self, *args, **kwargs):
+    ''' '''
+    hook = Tester._gen_hook(FunctionPrereq, "prerequisite", **kwargs)
+    inner = self._new_callable(self._prerequisites,
+                               hook=hook)
     if len(args) == 0:
       return inner
     if len(kwargs) > 0:
-      raise ValueError("kwargs passed to prerequisite call with built Prereq")
+      raise ValueError("kwargs passed to Tester.prerequisite call with built Prereq")
     return inner(*args)
 
   def testcase(self, *args, vec=None, **kwargs):
     ''' '''
-    def _hook(func):
-      if not isinstance(func, Testcase):
-        if not callable(func):
-          raise TypeError("Inner value on .prerequisite call is not callable")
-        func = FunctionPrereq(func, **kwargs)
-      return func
-    func = self._new_callable(self._testcases, hook=_hook)
+    hook = Tester._gen_hook(FunctionTestcase, "testcase", **kwargs)
     if vec is not None:
       if len(kwargs) > 0:
         raise ValueError("Joint use of Vec with single spec def")
-      func =  self._new_callable(self._testcases,
-                                 hook=lambda f: TestcaseGroup(
-                                  *(FunctionTestcase(f, **spec) for spec in vec)
-                                ))
+      hook = lambda f: TestcaseGroup(*(FunctionTestcase(f, **spec) for spec in vec))
+    func = self._new_callable(self._testcases, hook=hook)
     if len(args) == 0:
       return func
+    if len(kwargs) > 0:
+      raise ValueError("kwargs passed to Tester.testcase call with built Testcase")
     return func(*args)
 
   def no_tests(self):
