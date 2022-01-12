@@ -47,6 +47,7 @@ def main():
     else:
       print(f"[OKAY] {testdir}")
       os.remove(os.environ['PATH_RESULTS'])
+    print("---\n")
 
   if failures != 0:
     sys.exit(1)
