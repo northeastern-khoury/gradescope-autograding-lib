@@ -10,8 +10,28 @@ import sys
 from pathlib import Path
 
 
+# def do_nothing(gradescope):
+#   ''' do_nothing:
+#       "Null" Testing wrapper just returns the installed lib
+#   '''
+#   if gradescope is None:
+#     import gradescope #pylint:disable=C0415,E0401
+#     return gradescope
+#   return gradescope
+
+# def go_gslib_reload(gradescope):
+#   ''' go_gslib_reload:
+#       Reload the gslib
+#   '''
+#   importlib.invalidate_caches()
+#   if gradescope is None:
+#     return importlib.import_module("gradescope")
+#   return importlib.reload(gradescope)
+
 def main():
   ''' main time '''
+  os.chdir(Path(__file__).parent.absolute())
+
   gradescope = None
   failures = 0
 
@@ -19,11 +39,15 @@ def main():
   os.environ['DEBUG'] = 'True'
 
   for testdir in sorted(filter(os.path.isdir, os.listdir())):
+    if testdir[0] == '.':
+      continue
+
     # Point gradescope lib to the current test case
     os.environ['AUTOGRADER_ROOT'] = os.path.abspath(testdir)
     os.environ['PATH_RESULTS']    = str(Path(os.getcwd()) / 'results.json')
 
     # Reload dependencies
+    # gradescope = reload_lib(gradescope)
     importlib.invalidate_caches()
     if gradescope is None:
       gradescope = importlib.import_module("gradescope")
