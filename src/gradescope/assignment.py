@@ -79,7 +79,10 @@ class Assignment:
 
   @staticmethod
   def decode_json(osv):
-    ''' '''
+    ''' decode_json: U(dict, None) -> U(Assignment, None)
+    '''
+    if osv is None:
+      return None
     osv["asgnid"] = osv["id"]
     del osv["id"]
     osv["release_date"] = datetime.fromisoformat(osv["release_date"])

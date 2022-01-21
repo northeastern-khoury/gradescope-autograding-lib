@@ -165,8 +165,10 @@ class Results:
 
   @staticmethod
   def decode_json(osv):
+    ''' decode_json: U(dict, None) -> U(Results, None)
     '''
-    '''
-    if "leaderboard" in osv: 
+    if osv is None:
+      return None
+    if "leaderboard" in osv:
       osv["leaderboard"] = list(map(Leaderboard.decode_json, osv["leaderboard"]))
     return Results(**osv)

@@ -1,61 +1,89 @@
 {
-  "id": 314159,
-  "users": [
+  "id": 106710841,
+  "users":
+  [
     {
-      "id": 7,
-      "email": "t.sachleben@northeastern.edu",
-      "name": "Tariq Sachleben",
-      "sid": null,
-      "assignment": {
-        "release_date": "2021-09-10T18:00:00.000000-07:00",
-        "due_date": "2021-09-14T18:00:00.000000-07:00",
-        "late_due_date": "2021-12-17T20:00:00.000000-08:00"
+      "id": 1937772,
+      "email": "a.mislove@northeastern.edu",
+      "name": "Alan Mislove",
+      "sid": "000000000F",
+      "assignment":
+      {
+        "release_date": "2022-01-24T10:00:00.000000-08:00",
+        "due_date": "2022-01-27T10:00:00.000000-08:00",
+        "late_due_date": "2022-02-01T10:00:00.000000-08:00"
       }
     }
   ],
-  "created_at": "2021-09-10T18:25:53.109082-07:00",
+  "created_at": "2022-01-20T12:38:57.776192-08:00",
   "assignment_id": null,
-  "assignment": {
-    "id": 1,
-    "title": "Example",
-    "release_date": "2021-09-10T18:00:00.000000-07:00",
-    "due_date": "2021-09-14T18:00:00.000000-07:00",
+  "assignment":
+  {
+    "id": 1789774,
+    "title": "Project 1 (Testing don't submit)",
+    "release_date": "2022-01-24T10:00:00.000000-08:00",
+    "due_date": "2022-01-27T10:00:00.000000-08:00",
     "total_points": "100.0",
-    "course_id": -1,
+    "course_id": 345413,
     "group_submission": false,
     "group_size": null,
-    "late_due_date": "2021-12-17T20:00:00.000000-08:00",
-    "outline": [
+    "late_due_date": "2022-02-01T10:00:00.000000-08:00",
+    "outline":
+    [
       {
-        "id": 11489099,
+        "id": 14008359,
         "type": "ProgrammingQuestion",
         "title": "Autograder",
         "parent_id": null,
         "weight": "0.0",
-        "content": [],
-        "crop_rect_list": [],
+        "content":
+        [],
+        "crop_rect_list":
+        [],
         "index": 1
       },
       {
-        "id": 11489101,
+        "id": 14008410,
         "type": "FreeResponseQuestion",
-        "title": "Manual Grading",
+        "title": "Real Grade",
         "parent_id": null,
         "weight": "100.0",
-        "content": [],
-        "crop_rect_list": [],
+        "content":
+        [],
+        "crop_rect_list":
+        [],
         "index": 2
       }
     ]
   },
   "submission_method": "upload",
-  "previous_submissions": [
+  "previous_submissions":
+  [
     {
-      "submission_time": "2021-09-10T18:20:07.128128-07:00",
+      "submission_time": "2022-01-20T10:32:27.713089-08:00",
       "score": "0.0",
-      "results": {
-        "output": "The autograder failed to execute correctly. Contact your course staff for help in debugging this issue. Make sure to include a link to this page so that they can help you most effectively."
-      }
+      "results":
+      {}
+    },
+    {
+      "submission_time": "2022-01-20T10:58:07.099122-08:00",
+      "score": "0.0",
+      "results": null
+    },
+    {
+      "submission_time": "2022-01-20T12:04:32.160782-08:00",
+      "score": "0.0",
+      "results": null
+    },
+    {
+      "submission_time": "2022-01-20T12:06:25.019965-08:00",
+      "score": "0.0",
+      "results": null
+    },
+    {
+      "submission_time": "2022-01-20T12:11:05.369084-08:00",
+      "score": "0.0",
+      "results": null
     }
   ]
 }

@@ -75,7 +75,10 @@ class Leaderboard:
 
   @staticmethod
   def decode_json(osv):
-    ''' '''
+    ''' decode_json: U(dict, None) -> U(Leaderboard, None)
+    '''
+    if osv is None:
+      return None
     if not isinstance(osv, list):
       raise TypeError()
     lbrd = Leaderboard()

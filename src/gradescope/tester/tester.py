@@ -91,11 +91,11 @@ class Tester:
     return _inner
 
   @staticmethod
-  def _gen_hook(innerc, name, **kwargs):
+  def _gen_hook(innerc, _tester_i_name, **kwargs):
     def _hook(func):
       if not isinstance(func, Prereq):
         if not callable(func):
-          raise TypeError(f"Inner value on .{name} call is not callable")
+          raise TypeError(f"Inner value on .{_tester_i_name} call is not callable")
         func = innerc(func, **kwargs)
       return func
     return _hook

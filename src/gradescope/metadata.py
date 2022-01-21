@@ -23,26 +23,34 @@ class Metadata:
                previous_submissions=None):
     if subid is None:
       raise TypeError("subid is None")
-    elif not isinstance(subid, int):
+    if not isinstance(subid, int):
       raise TypeError("subid not an integer")
 
     if not isinstance(created_at, datetime):
       raise TypeError("created_at is None")
+
     if not isinstance(assignment, Assignment):
       raise TypeError("assignment not an Assignment")
 
     if assignment_id is not None and not isinstance(assignment_id, int):
       raise TypeError("assignment_id not None or an int")
+
     if submission_method is None:
       raise TypeError("submission_method is None")
     if submission_method not in SUBMISSION_METHODS:
       raise ValueError(f"invalid submission_method \"{submission_method}\";"
                        f"expecting one of: {','.join(SUBMISSION_METHODS)}")
-    if not isinstance(users, list):
+
+    if users is None:
+      users = []
+    elif not isinstance(users, list):
       raise TypeError("users not a list")
-    if not all(map(lambda e: isinstance(e, User), users)):
+    elif not all(map(lambda e: isinstance(e, User), users)):
       raise ValueError("Not all elements in users list User objects")
-    if previous_submissions is not None and not isinstance(previous_submissions, list):
+
+    if previous_submissions is None:
+      previous_submissions = []
+    elif not isinstance(previous_submissions, list):
       raise TypeError("previous_submissions not a list")
 
     self._id = subid
@@ -92,8 +100,10 @@ class Metadata:
 
   @staticmethod
   def decode_json(osv):
+    ''' decode_json: U(dict, None) -> U(Metadata, None)
     '''
-    '''
+    if osv is None:
+      return None
     osv["subid"] = int(osv["id"])
     del osv["id"]
     osv["created_at"] = datetime.fromisoformat(osv["created_at"])
@@ -102,5 +112,6 @@ class Metadata:
     osv["assignment"] = Assignment.decode_json(osv["assignment"])
     osv["users"] = list(map(User.decode_json, osv["users"]))
     if "previous_submissions" in osv:
-      osv["previous_submissions"] = list(map(Submission.decode_json, osv["previous_submissions"]))
+      if osv["previous_submissions"] is not None:
+        osv["previous_submissions"] = list(map(Submission.decode_json, osv["previous_submissions"]))
     return Metadata(**osv)

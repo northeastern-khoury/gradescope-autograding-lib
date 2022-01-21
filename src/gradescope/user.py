@@ -61,8 +61,10 @@ class User:
 
   @staticmethod
   def decode_json(osv):
+    ''' decode_json: U(dict, None) -> U(User, None)
     '''
-    '''
+    if osv is None:
+      return None
     osv["uid"] = osv["id"]
     del osv["id"]
     osv["overrides"] = osv["assignment"]

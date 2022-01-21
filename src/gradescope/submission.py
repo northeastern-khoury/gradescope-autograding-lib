@@ -16,7 +16,7 @@ class Submission:
       raise TypeError("score could not be coerced to float") from exc
     if not isinstance(submission_time, datetime):
       raise TypeError("submission_time not a datetime")
-    if not isinstance(results, Results):
+    if results is not None and not isinstance(results, Results):
       raise TypeError("results is not a Results object")
 
     self._submission_time = submission_time
@@ -33,7 +33,10 @@ class Submission:
 
   @staticmethod
   def decode_json(osv):
-    ''' '''
+    ''' decode_json: U(dict, None) -> U(Submission, None)
+    '''
+    if osv is None:
+      return None
     osv["submission_time"] = datetime.fromisoformat(osv["submission_time"])
     osv["score"] = float(osv["score"])
     osv["results"] = Results.decode_json(osv["results"])

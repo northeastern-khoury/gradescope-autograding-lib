@@ -138,6 +138,8 @@ class Grade: #pylint:disable=R0902
 
   @staticmethod
   def decode_json(osv):
-    ''' str -> Grade
+    ''' decode_json: U(dict, None) -> U(Grade, None)
     '''
-    return Grade(**json.loads(osv))
+    if osv is None:
+      return None
+    return Grade(osv)
