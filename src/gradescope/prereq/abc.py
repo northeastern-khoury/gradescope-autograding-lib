@@ -18,9 +18,16 @@ class Prereq(AbstractContextManager):
 
   @abstractmethod
   def exec(self):
-    '''
+    ''' exec: Self -> U(None, F())
+        
+
+        Raises: Not Implemented Error if not Overridden
     '''
     raise NotImplementedError('Missing Method Override?')
+
+  def dispatch(self, res, stack):
+    self._res = res
+    stack.enter_context(self)
 
   def __enter__(self):
     '''
@@ -30,9 +37,18 @@ class Prereq(AbstractContextManager):
     except PrereqError as exc:
       if not self._optional:
         raise exc
-      print(exc.stdout)
+      res.add_tests(Grade(
+          score=0,
+          max_score=0,
+          name=self.__name__,
+          output=f"{exc}:\n\n{exc.stdout}",
+          tags=None,
+          visibility=exc.visibility,
+          extra_data=None,
+      ))
     return self
 
   def __exit__(self, exc_type, exc_cal, exc_tb):
     if exc_type is None and self._cleanup is not None:
       self._cleanup()
+    self.res = None

@@ -167,7 +167,7 @@ class Tester:
     try:
       with ExitStack() as stack:
         for ccm in context:
-          stack.enter_context(ccm)
+          ccm.dispatch(res, stack)
         for test in self._testcases:
           test.exec(res)
     except PrereqError as exc:
