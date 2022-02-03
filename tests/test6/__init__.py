@@ -43,24 +43,22 @@ def _gen_vec(names):
 def test_echo(name):
   expected = f"Hello, {name}!"
   proc = subprocess.Popen([MAIN, name], stdout=subprocess.PIPE)
-  out = proc.communicate()[0]
-  rc = proc.returncode
-  if rc != 0:
-    return (0, f"Executable returned with Error Code {rc}")
-  if out.strip() != expected:
-    return (0, f"'{out}' != '{expected}'")
+  out = proc.communicate()[0].decode().strip()
+  prc = proc.returncode
+  assert prc == 0, f"Executable returned with Error Code {prc}"
+  assert out == expected, f"'{out}' != '{expected}'"
   return (1, "Okay!")
 
-def post_test(_res):
-  seen = []
-  new_hashes = _file_hashes()
-  for fname in HASHES:
-    seen.append(fname)
-    if fname not in new_hashes:
-      raise AssertionError(f"File '{fname}' deleted after Tester.exec")
-    if HASHES[fname] != new_hashes[fname]:
-      raise AssertionError(f"File '{fname}' different after Tester.exec "
-                            f"(Hash was: {HASHES[fname]}; now: {new_hashes[fname]}")
-  for fname in new_hashes:
-    if fname not in seen:
-      raise AssertionError(f"File '{fname}' not present before Tester.exec but present after")
+def post_test(res):
+  def _reg_impl(t, test, score):
+    return t.name == test and t.score == score
+
+  for t in res.tests:
+    try:
+      assert any([_reg_impl(t, 'Hello, World!', 1.0),
+                  _reg_impl(t, 'Hello, Gradescope!', 1.0),
+                  _reg_impl(t, 'Hello, Tester!', 1.0),
+                  _reg_impl(t, 'Hello, Failure!', 0.0),
+                ]), t.name
+    except AssertionError as exc:
+      raise AssertionError(f"Bad out on '{str(exc)}'") from exc

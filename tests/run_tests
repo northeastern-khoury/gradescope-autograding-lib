@@ -37,11 +37,9 @@ def main():
 
   sys.path.insert(1, str(Path(os.path.dirname(__file__)).resolve().parent / "src"))
   os.environ['DEBUG'] = 'True'
+  targets = sorted(filter(lambda d: d[0] != '.', filter(os.path.isdir, os.listdir())))
 
-  for testdir in sorted(filter(os.path.isdir, os.listdir())):
-    if testdir[0] == '.':
-      continue
-
+  for testdir in targets:
     # Point gradescope lib to the current test case
     os.environ['AUTOGRADER_ROOT'] = os.path.abspath(testdir)
     os.environ['PATH_RESULTS']    = str(Path(os.getcwd()) / 'results.json')
@@ -60,28 +58,39 @@ def main():
     tester = unit.tester
 
     # Functional section
-    tester.exec().save()
+    res = tester.exec()
+    res.save()
+
+    failed = False
+    def _failed(testdir, msg):
+      nonlocal failed
+      failed = True
+      print(f"[FAIL] {testdir}\n       {msg}")
+
     if not os.path.exists(os.environ['PATH_RESULTS']):
-      failures += 1
-      print(f"[FAIL] {testdir}")
-      print( "    Failed to produce output json")
+      _failed(testdir, "Failed to produce output json")
     elif tester.failed:
-      failures += 1
-      print(f"[FAIL] {testdir}")
-      print(open(os.environ['PATH_RESULTS']).read())
-    else:
-      print(f"[OKAY] {testdir}")
-      os.remove(os.environ['PATH_RESULTS'])
-    print("---\n")
+      _failed(testdir, open(os.environ['PATH_RESULTS']).read())
 
     if hasattr(unit, "post_test"):
       try:
-        unit.post_test()
+        unit.post_test(res)
       except AssertionError as exc:
-        print(f"[FAIL] ")
-        print(f"    Postcondition Exception: {exc}")
+        _failed(testdir, f"Postcondition Exception: {exc}")
+
+    if not failed:
+      print(f"[OKAY] {testdir}")
+    else:
+      failures += 1
+
+    if os.path.exists(os.environ['PATH_RESULTS']):
+      os.remove(os.environ['PATH_RESULTS'])
+
+    print("---\n")
 
   if failures != 0:
+    print(f"FAILED: {failures}/{len(targets)}")
+    print(targets)
     sys.exit(1)
 
 if __name__ == '__main__':

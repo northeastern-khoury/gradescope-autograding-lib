@@ -1,5 +1,4 @@
 
-import json
 from warnings import warn
 
 from .visibility import VISIBLE, VISIBILITIES
@@ -52,6 +51,15 @@ class Grade: #pylint:disable=R0902
     self._visibility = visibility
     self._extra_data = extra_data
 
+  def __repr__(self):
+    msg  = '\''
+    msg += self._name if self._name else "(?)"
+    msg += f"[{self._number}]" if self._number else ""
+    msg += ": "
+    msg += f"{self._score}/{self._max_score}"
+    msg += '\''
+    return msg
+
   def __getitem__(self, key):
     if key in self._extra_data:
       return self._extra_data[key]
@@ -59,6 +67,13 @@ class Grade: #pylint:disable=R0902
 
   def __setitem__(self, name, val):
     self._extra_data[name] = val
+
+  @property
+  def name(self):
+    ''' self -> U(str, None)
+        Get the name of the current Grade object
+    '''
+    return self._name
 
   @property
   def score(self):

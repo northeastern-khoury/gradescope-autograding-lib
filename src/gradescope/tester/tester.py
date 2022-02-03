@@ -10,7 +10,7 @@ from ..file_util import ChDir, InstructorFiles
 from ..metadata import Metadata
 from ..prereq import FunctionPrereq, Prereq, PrereqError
 from ..results import Results
-from ..testcase import Testcase, FunctionTestcase, TestcaseGroup
+from ..testcase import FunctionTestcase, TestcaseGroup
 from ..visibility import VISIBLE, HIDDEN
 
 
@@ -71,7 +71,7 @@ class Tester:
                if func.__name__ == "<lambda>" else
                func.__name__
              )
-    elif hasattr(func, '__str__'):
+    if hasattr(func, '__str__'):
       return str(func)
     return hex(id(func))
 
@@ -167,9 +167,9 @@ class Tester:
     try:
       with ExitStack() as stack:
         for ccm in context:
-          stack.enter_context(ccm)
+          ccm.dispatch(res, stack)
         for test in self._testcases:
-          test.exec(res)
+          test._run(res)
     except PrereqError as exc:
       return self._handle_exec_failure("".join(exc.args),
                                        stdout=exc.stdout,
