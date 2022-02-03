@@ -3,11 +3,17 @@ from abc import abstractmethod
 from contextlib import AbstractContextManager
 
 from .error import PrereqError
+from ..grade import Grade
 
 
 class Prereq(AbstractContextManager):
   '''
   '''
+
+  def __new__(cls, *args, **kwargs):
+    e = super().__new__(cls)
+    e.__name__ = cls.__name__
+    return e
 
   def __init__(self, optional=False):
     if not isinstance(optional, bool):
@@ -15,11 +21,11 @@ class Prereq(AbstractContextManager):
 
     self._optional = optional
     self._cleanup = None
+    self._res = None
 
   @abstractmethod
   def exec(self):
     ''' exec: Self -> U(None, F())
-        
 
         Raises: Not Implemented Error if not Overridden
     '''
@@ -37,7 +43,7 @@ class Prereq(AbstractContextManager):
     except PrereqError as exc:
       if not self._optional:
         raise exc
-      res.add_tests(Grade(
+      self._res.add_tests(Grade(
           score=0,
           max_score=0,
           name=self.__name__,
@@ -46,9 +52,8 @@ class Prereq(AbstractContextManager):
           visibility=exc.visibility,
           extra_data=None,
       ))
-    return self
 
   def __exit__(self, exc_type, exc_cal, exc_tb):
     if exc_type is None and self._cleanup is not None:
       self._cleanup()
-    self.res = None
+    self._res = None

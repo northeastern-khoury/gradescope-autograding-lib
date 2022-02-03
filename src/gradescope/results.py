@@ -2,26 +2,40 @@
 import json
 import time
 
-from contextlib import AbstractContextManager
-
 from . import paths
 
 from .grade import Grade
 from .json import JSONEncoder
 from .leaderboard import Leaderboard
+from .prereq import Prereq
 from .visibility import HIDDEN, VISIBLE, VISIBILITIES
 
 
-class _ResultTimer(AbstractContextManager):
+class _ResultTimer(Prereq):
   def __init__(self, target, *args, **kwargs):
     super().__init__(*args, **kwargs)
     self._res = target
 
-  def __enter__(self):
+  def exec(self):
     self._res.start_time()
+    return self._res.end_time
 
-  def __exit__(self, *_exc):
-    self._res.end_time()
+class _RO:
+  def __init__(self, inner):
+    self._inner = inner
+
+  def __str__(self):
+    return str(self._inner)
+    # return f"[{','.join(map(str, self._inner))}]"
+
+  def __len__(self):
+    return len(self._inner)
+
+  def __iter__(self):
+    return iter(self._inner)
+
+  def __getitem__(self, ii):
+    return self._inner[ii]
 
 class Results:
   ''' class Results
@@ -110,6 +124,10 @@ class Results:
 
   def __setitem__(self, name, val):
     self._extra_data[name] = val
+
+  @property
+  def tests(self):
+    return _RO(self._tests)
 
   def start_time(self):
     if self._start_time is not None:

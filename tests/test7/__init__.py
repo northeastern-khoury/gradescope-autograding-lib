@@ -7,8 +7,16 @@ from pathlib import Path
 
 import gradescope
 from gradescope import Tester
+from gradescope.prereq import Prereq, PrereqError
 from gradescope.file_util import ChDir, InstructorFiles, Manifest
 from gradescope.unix_util import ExecutableFile, Make
+
+
+class FailingPrereq(Prereq):
+  __name__ = "FailingPrereq"
+
+  def exec(self):
+    raise PrereqError("Optional")
 
 def _file_hashes():
   rvd = {}
@@ -27,6 +35,7 @@ NAMES = ["World", "Gradescope", "Tester", "Failure"]
 HASHES = _file_hashes()
 
 tester = Tester()
+tester.prerequisite(FailingPrereq(optional=True))
 tester.prerequisite(Manifest(MAIN_C))
 tester.prerequisite(Make('all', clean_after=True))
 tester.prerequisite(ExecutableFile(MAIN))
@@ -43,24 +52,12 @@ def _gen_vec(names):
 def test_echo(name):
   expected = f"Hello, {name}!"
   proc = subprocess.Popen([MAIN, name], stdout=subprocess.PIPE)
-  out = proc.communicate()[0]
-  rc = proc.returncode
-  if rc != 0:
-    return (0, f"Executable returned with Error Code {rc}")
-  if out.strip() != expected:
-    return (0, f"'{out}' != '{expected}'")
+  out = proc.communicate()[0].decode().strip()
+  prc = proc.returncode
+  assert prc == 0, f"Executable returned with Error Code {prc}"
+  assert out == expected, f"'{out}' != '{expected}'"
   return (1, "Okay!")
 
-def post_test(_res):
-  seen = []
-  new_hashes = _file_hashes()
-  for fname in HASHES:
-    seen.append(fname)
-    if fname not in new_hashes:
-      raise AssertionError(f"File '{fname}' deleted after Tester.exec")
-    if HASHES[fname] != new_hashes[fname]:
-      raise AssertionError(f"File '{fname}' different after Tester.exec "
-                            f"(Hash was: {HASHES[fname]}; now: {new_hashes[fname]}")
-  for fname in new_hashes:
-    if fname not in seen:
-      raise AssertionError(f"File '{fname}' not present before Tester.exec but present after")
+def post_test(res):
+  assert any(map(lambda g: g.name == 'FailingPrereq', res.tests)),\
+         "Missing FailingPrereq in output"

@@ -1,6 +1,9 @@
 
 from abc import ABC, abstractmethod
 
+from ..grade import Grade
+from ..visibility import VISIBLE, VISIBILITIES
+
 class Testcase(ABC):
   '''
   '''
@@ -22,9 +25,6 @@ class Testcase(ABC):
       raise ValueError("visibility item invalid: "
                        f"\"{visibility}\" not in {VISIBILITIES}")
 
-    if not callable(func):
-      raise ValueError(f"Given a non-function object: {func}")
-
     self.__name__ = name
 
     self._number = number
@@ -40,3 +40,21 @@ class Testcase(ABC):
         Run this Testcase and produce a grade
     '''
     raise NotImplementedError('Missing Method Override?')
+
+  def _run(self, res):
+    ''' self -> Grade
+        Grade this Testcase
+    '''
+    try:
+      self.exec(res)
+    except AssertionError as exc:
+      res.add_tests(Grade(
+          score=0,
+          max_score=self._max_score,
+          name=self.__name__,
+          number=self._number,
+          output=str(exc),
+          tags=None,
+          visibility=self._visibility,
+          extra_data=None,
+      ))
