@@ -9,8 +9,9 @@ from .. import paths
 from ..file_util import ChDir, InstructorFiles
 from ..metadata import Metadata
 from ..prereq import FunctionPrereq, Prereq, PrereqError
+from ..testcase import Testcase, FunctionTestcase, TestcaseGroup
+from ..leaderboard import LbEntryFunction
 from ..results import Results
-from ..testcase import FunctionTestcase, TestcaseGroup
 from ..visibility import VISIBLE, HIDDEN
 
 
@@ -32,6 +33,7 @@ class Tester:
     self._metadata = Tester._load_metadata(metadata)
     self._prerequisites = []
     self._testcases = []
+    self._lbefactories = []
     self._callable_map = {}
     self._failed = False
 
@@ -41,10 +43,11 @@ class Tester:
 
   def __str__(self):
     return " ".join(["Tester{{",
-                     f"maintainer: '{self._maintainer}',",
-                     f"names: [{', '.join(self._callable_map.keys())}],",
-                     f"prereqs: [{', '.join(map(str, self._prerequisites))}],"
-                     f"testcases: [{', '.join(map(str, self._testcases))}],",
+                     f"maintainer: '{self._maintainer}', ",
+                     f"names: [{', '.join(self._callable_map.keys())}], ",
+                     f"prereqs: [{', '.join(map(str, self._prerequisites))}], "
+                     f"testcases: [{', '.join(map(str, self._testcases))}], ",
+                     f"leaderboards: [{', '.join(map(str, self._lbefactories))}], ",
                      f"failed? {self._failed}",
                      "}}"])
 
@@ -103,8 +106,7 @@ class Tester:
   def prerequisite(self, *args, **kwargs):
     ''' '''
     hook = Tester._gen_hook(FunctionPrereq, "prerequisite", **kwargs)
-    inner = self._new_callable(self._prerequisites,
-                               hook=hook)
+    inner = self._new_callable(self._prerequisites, hook=hook)
     if len(args) == 0:
       return inner
     if len(kwargs) > 0:
@@ -113,17 +115,28 @@ class Tester:
 
   def testcase(self, *args, vec=None, **kwargs):
     ''' '''
-    hook = Tester._gen_hook(FunctionTestcase, "testcase", **kwargs)
     if vec is not None:
       if len(kwargs) > 0:
         raise ValueError("Joint use of Vec with single spec def")
       hook = lambda f: TestcaseGroup(*(FunctionTestcase(f, **spec) for spec in vec))
+    else: 
+      hook = Tester._gen_hook(FunctionTestcase, "testcase", **kwargs)
+
     func = self._new_callable(self._testcases, hook=hook)
     if len(args) == 0:
       return func
     if len(kwargs) > 0:
       raise ValueError("kwargs passed to Tester.testcase call with built Testcase")
     return func(*args)
+
+  def leaderboard(self, *args, **kwargs):
+    hook = Tester._gen_hook(LbEntryFunction, "leaderboard", **kwargs)
+    inner = self._new_callable(self._lbefactories, hook=hook)
+    if len(args) == 0:
+      return inner
+    if len(kwargs) > 0:
+      raise ValueError("kwargs passed to Tester.leaderboard with built LeaderboardEntryFactory")
+    return inner(*args)
 
   def no_tests(self):
     ''' no_tests : None -> None
@@ -170,6 +183,8 @@ class Tester:
           ccm.dispatch(res, stack)
         for test in self._testcases:
           test._run(res)
+        for lbf in self._lbefactories:
+          lbf.exec(res)
     except PrereqError as exc:
       return self._handle_exec_failure("".join(exc.args),
                                        stdout=exc.stdout,

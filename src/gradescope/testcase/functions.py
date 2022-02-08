@@ -14,15 +14,17 @@ class FunctionTestcase(Testcase):
       raise ValueError(f"Given a non-function object: {func}")
     if args is not None and not hasattr(args, '__iter__'):
       raise ValueError(f"Given a non-array args list: {type(args)}")
+    if args is None:
+      args = ()
 
     self._func = func
     self._args = args
 
   def exec(self, res):
-    ''' self -> Grade
+    ''' self -> None
         Grade this Testcase
     '''
-    pct, output = self._func() if self._args is None else self._func(*self._args)
+    pct, output = self._func(*self._args)
     res.add_tests(Grade(
         score=pct * self._max_score,
         max_score=(0 if self._extra_credit else self._max_score),

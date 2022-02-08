@@ -1,0 +1,3 @@
+
+ORDER_ASCENDING = "asc"
+ORDER_DESCENDING = "desc"
