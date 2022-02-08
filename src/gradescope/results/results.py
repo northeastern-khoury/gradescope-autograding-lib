@@ -2,13 +2,13 @@
 import json
 import time
 
-from . import paths
-
-from .grade import Grade
-from .json import JSONEncoder
 from .leaderboard import Leaderboard
-from .prereq import Prereq
-from .visibility import HIDDEN, VISIBLE, VISIBILITIES
+
+from .. import paths
+from ..grade import Grade
+from ..json import JSONEncoder
+from ..prereq import Prereq
+from ..visibility import HIDDEN, VISIBLE, VISIBILITIES
 
 
 class _ResultTimer(Prereq):
@@ -19,23 +19,6 @@ class _ResultTimer(Prereq):
   def exec(self):
     self._res.start_time()
     return self._res.end_time
-
-class _RO:
-  def __init__(self, inner):
-    self._inner = inner
-
-  def __str__(self):
-    return str(self._inner)
-    # return f"[{','.join(map(str, self._inner))}]"
-
-  def __len__(self):
-    return len(self._inner)
-
-  def __iter__(self):
-    return iter(self._inner)
-
-  def __getitem__(self, ii):
-    return self._inner[ii]
 
 class Results:
   ''' class Results
@@ -84,14 +67,10 @@ class Results:
     else:
       raise TypeError("tests is neither None nor a list")
 
-    if leaderboard is None:
-      leaderboard = []
-    elif isinstance(leaderboard, Leaderboard):
-      leaderboard = [leaderboard.copy()]
-    else:
-      if any(not isinstance(e, Leaderboard) for e in leaderboard):
-        raise TypeError("leaderboard should be an array of Leaderboards")
-      leaderboard = [ e.copy() for e in leaderboard ]
+    if isinstance(leaderboard, Leaderboard):
+      leaderboard = leaderboard.copy()
+    elif leaderboard is not None:
+      raise TypeError("leaderboard is neither a Leaderboard or None")
 
     if extra_data is None:
       extra_data = {}
@@ -110,7 +89,13 @@ class Results:
     self._start_time        = None
 
   @property
+  def tests(self):
+    return self._tests
+
+  @property
   def leaderboard(self):
+    if self._leaderboard is None:
+      self._leaderboard = Leaderboard()
     return self._leaderboard
 
   @property
@@ -124,10 +109,6 @@ class Results:
 
   def __setitem__(self, name, val):
     self._extra_data[name] = val
-
-  @property
-  def tests(self):
-    return _RO(self._tests)
 
   def start_time(self):
     if self._start_time is not None:
@@ -169,7 +150,7 @@ class Results:
       s_obj["extra_data"] = self._extra_data
     if self._tests is not None:
       s_obj["tests"] = self._tests
-    if len(self._leaderboard) > 0:
+    if self._leaderboard is not None and len(self._leaderboard) > 0:
       s_obj["leaderboard"] = self._leaderboard
 
     return s_obj

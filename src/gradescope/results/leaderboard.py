@@ -1,8 +1,7 @@
 
-ORDER_ASCENDING = "asc"
-ORDER_DESCENDING = "desc"
+from ..leaderboard.orders import ORDER_ASCENDING, ORDER_DESCENDING
 
-class _LeaderboardElem:
+class LeaderboardElem:
   ''' '''
 
   def __init__(self,
@@ -52,7 +51,7 @@ class Leaderboard:
 
   def __setitem__(self, key, val):
     if key not in self._elems:
-      self._elems[key] = _LeaderboardElem()
+      self._elems[key] = LeaderboardElem()
     self._elems[key].value = val
 
   def __delitem__(self, key):
@@ -71,7 +70,7 @@ class Leaderboard:
       if val.order != ORDER_DESCENDING:
         elm["order"] = val.order
       return elm
-    return map(_make_json_elem, self._elems.items())
+    return list(map(lambda e: _make_json_elem(*e), self._elems.items()))
 
   @staticmethod
   def decode_json(osv):

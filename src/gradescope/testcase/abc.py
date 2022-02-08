@@ -1,4 +1,4 @@
-
+  
 from abc import ABC, abstractmethod
 
 from ..grade import Grade
@@ -34,10 +34,10 @@ class Testcase(ABC):
 
   @abstractmethod
   def exec(self, res):
-    ''' self -> float x U(None, str)
+    ''' self -> None
         Abstract Method
         Raises: NotImplementedError if not overridden
-        Run this Testcase and produce a grade
+        Run this Testcase and add a Grade to res
     '''
     raise NotImplementedError('Missing Method Override?')
 

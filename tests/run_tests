@@ -6,6 +6,7 @@
 import importlib
 import os
 import sys
+import traceback
 
 from pathlib import Path
 
@@ -40,51 +41,55 @@ def main():
   targets = sorted(filter(lambda d: d[0] != '.', filter(os.path.isdir, os.listdir())))
 
   for testdir in targets:
-    # Point gradescope lib to the current test case
-    os.environ['AUTOGRADER_ROOT'] = os.path.abspath(testdir)
-    os.environ['PATH_RESULTS']    = str(Path(os.getcwd()) / 'results.json')
+    try:
+      # Point gradescope lib to the current test case
+      os.environ['AUTOGRADER_ROOT'] = os.path.abspath(testdir)
+      os.environ['PATH_RESULTS']    = str(Path(os.getcwd()) / 'results.json')
 
-    # Reload dependencies
-    # gradescope = reload_lib(gradescope)
-    importlib.invalidate_caches()
-    if gradescope is None:
-      gradescope = importlib.import_module("gradescope")
-    else:
-      gradescope = importlib.reload(gradescope)
-      gradescope.paths.reload()
+      # Reload dependencies
+      # gradescope = reload_lib(gradescope)
+      importlib.invalidate_caches()
+      if gradescope is None:
+        gradescope = importlib.import_module("gradescope")
+      else:
+        gradescope = importlib.reload(gradescope)
+        gradescope.paths.reload()
 
-    # Load Testcase
-    unit = importlib.import_module(testdir)
-    tester = unit.tester
+      # Load Testcase
+      unit = importlib.import_module(testdir)
+      tester = unit.tester
 
-    # Functional section
-    res = tester.exec()
-    res.save()
+      # Functional section
+      res = tester.exec()
+      res.save()
 
-    failed = False
-    def _failed(testdir, msg):
-      nonlocal failed
-      failed = True
-      print(f"[FAIL] {testdir}\n       {msg}")
+      failed = False
+      def _failed(testdir, msg):
+        nonlocal failed
+        failed = True
+        print(f"[FAIL] {testdir}\n       {msg}")
 
-    if not os.path.exists(os.environ['PATH_RESULTS']):
-      _failed(testdir, "Failed to produce output json")
-    elif tester.failed:
-      _failed(testdir, open(os.environ['PATH_RESULTS']).read())
+      if not os.path.exists(os.environ['PATH_RESULTS']):
+        _failed(testdir, "Failed to produce output json")
+      elif tester.failed:
+        _failed(testdir, open(os.environ['PATH_RESULTS']).read())
 
-    if hasattr(unit, "post_test"):
-      try:
-        unit.post_test(res)
-      except AssertionError as exc:
-        _failed(testdir, f"Postcondition Exception: {exc}")
+      if hasattr(unit, "post_test"):
+        try:
+          unit.post_test(res)
+        except AssertionError as exc:
+          _failed(testdir, f"Postcondition Exception: {exc}")
 
-    if not failed:
-      print(f"[OKAY] {testdir}")
-    else:
-      failures += 1
+      if not failed:
+        print(f"[OKAY] {testdir}")
+      else:
+        failures += 1
 
-    if os.path.exists(os.environ['PATH_RESULTS']):
-      os.remove(os.environ['PATH_RESULTS'])
+      if os.path.exists(os.environ['PATH_RESULTS']):
+        os.remove(os.environ['PATH_RESULTS'])
+    except Exception as exc:
+      print(f"[FAIL] {testdir}\n       {exc}")
+      traceback.print_exc()
 
     print("---\n")
 

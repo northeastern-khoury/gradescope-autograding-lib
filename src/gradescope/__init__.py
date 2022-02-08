@@ -5,7 +5,6 @@ import os
 
 from .assignment import Assignment
 from .grade import Grade
-from .leaderboard import Leaderboard
 from .json import JSONEncoder
 from .metadata import Metadata
 from .results import Results
