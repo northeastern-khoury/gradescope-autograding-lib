@@ -51,10 +51,106 @@
   "submission_method": "upload",
   "previous_submissions": [
     {
-      "submission_time": "2021-09-10T18:20:07.128128-07:00",
+      "submission_time": "2022-02-03T18:20:07.128128-08:00",
       "score": "0.0",
       "results": {
         "output": "The autograder failed to execute correctly. Contact your course staff for help in debugging this issue. Make sure to include a link to this page so that they can help you most effectively."
+
+      }
+    },
+    {
+      "submission_time": "2022-02-04T18:46:58.166131-08:00",
+      "score": "10.0",
+      "results": {
+        "score": null,
+        "tests": [
+            {
+              "name": "Ex-1",
+              "tags": null,
+              "score": 3,
+              "number": null,
+              "output": "Your code appears to run correctly (delivery percentage 100.0000%, goodput 24.9066%)",
+              "max_score": 3,
+              "extra_data": null,
+              "visibility": "visible"
+            },
+            {
+              "name": "ex-2",
+              "tags": null,
+              "score": 3,
+              "number": null,
+              "output": "Your code appears to run correctly (delivery percentage 100.0000%, goodput 19.1571%)",
+              "max_score": 3,
+              "extra_data": null,
+              "visibility": "visible"
+            },
+            {
+            "name": "ex-3",
+              "tags": null,
+              "score": 4,
+              "number": null,
+              "output": "Your code appears to run correctly (delivery percentage 87.0000%, goodput 5.0670%)",
+              "max_score": 4,
+              "extra_data": null,
+              "visibility": "visible"
+            }
+        ],
+        "output": null,
+        "extra_data": null,
+        "visibility": "visible",
+        "leaderboard": []
+      }
+    },
+    {
+      "submission_time": "2022-02-04T18:46:58.166131-08:00",
+      "score": "10.0",
+      "results": {
+        "score": null,
+        "tests": [
+            {
+              "name": "Ex-1",
+              "tags": null,
+              "score": 3,
+              "number": null,
+              "output": "Your code appears to run correctly (delivery percentage 100.0000%, goodput 24.9066%)",
+              "max_score": 3,
+              "extra_data": null,
+              "visibility": "visible"
+            },
+            {
+              "name": "ex-2",
+              "tags": null,
+              "score": 3,
+              "number": null,
+              "output": "Your code appears to run correctly (delivery percentage 100.0000%, goodput 19.1571%)",
+              "max_score": 3,
+              "extra_data": null,
+              "visibility": "visible"
+            },
+            {
+            "name": "ex-3",
+              "tags": null,
+              "score": 4,
+              "number": null,
+              "output": "Your code appears to run correctly (delivery percentage 87.0000%, goodput 5.0670%)",
+              "max_score": 4,
+              "extra_data": null,
+              "visibility": "visible"
+            }
+        ],
+        "output": null,
+        "extra_data": null,
+        "visibility": "visible",
+        "leaderboard": [
+          {
+            "name": "Highest Delivery",
+            "value": 0.87000
+          },
+          {
+            "name": "Highest Goodput",
+            "value": 0.05067
+          }
+        ]
       }
     }
   ]

@@ -67,9 +67,7 @@ class Results:
     else:
       raise TypeError("tests is neither None nor a list")
 
-    if isinstance(leaderboard, Leaderboard):
-      leaderboard = leaderboard.copy()
-    elif leaderboard is not None:
+    if leaderboard is not None and not isinstance(leaderboard, Leaderboard):
       raise TypeError("leaderboard is neither a Leaderboard or None")
 
     if extra_data is None:
@@ -169,5 +167,13 @@ class Results:
     if osv is None:
       return None
     if "leaderboard" in osv:
-      osv["leaderboard"] = list(map(Leaderboard.decode_json, osv["leaderboard"]))
+      objs = osv["leaderboard"]
+      osv["leaderboard"] = Leaderboard()
+      for val in objs:
+        key = val["name"]
+        if "value" not in val:
+          raise ValueError("Missing mandatory")
+        osv["leaderboard"][key] = val["value"]
+        if "order" in val:
+          osv["leaderboard"][key].order = val["order"]
     return Results(**osv)
