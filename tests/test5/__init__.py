@@ -8,6 +8,8 @@ from pathlib import Path
 import gradescope
 from gradescope import Tester
 from gradescope.file_util import ChDir, InstructorFiles, Manifest
+from gradescope.grade import Grade
+from gradescope.testcase import Testcase
 from gradescope.unix_util import ExecutableFile, Make
 
 def _file_hashes():
@@ -22,7 +24,28 @@ def _file_hashes():
 
 MAIN = "./main"
 MAIN_C = 'main.c'
-NAMES = ["World", "Gradescope", "Tester", "Failure"]
+
+class ExTestcase(Testcase):
+  def __init__(self, *names):
+    super().__init__()
+    assert all(map(lambda s: isinstance(s, str), names))
+    self._names = names
+
+  @staticmethod
+  def _test_echo(name):
+    expected = f"Hello, {name}!"
+    proc = subprocess.Popen([MAIN, name], stdout=subprocess.PIPE)
+    out = proc.communicate()[0]
+    rc = proc.returncode
+    if rc != 0:
+      return Grade(score=0, max_score=1,
+                   output=f"Executable returned with Error Code {rc}")
+    if out.strip() != expected:
+      return Grade(score=0, max_score=1, output=f"'{out}' != '{expected}'")
+    return Grade(score=1, max_score=1, output="Okay!")
+
+  def exec(self, res):
+    res.add_tests(ExTestcase._test_echo(fname) for fname in self._names)
 
 HASHES = _file_hashes()
 
@@ -30,26 +53,7 @@ tester = Tester()
 tester.prerequisite(Manifest(MAIN_C))
 tester.prerequisite(Make('all', clean_after=True))
 tester.prerequisite(ExecutableFile(MAIN))
-
-def _gen_vec(names):
-  for name in names:
-    yield  {
-        "args": (name, ),
-        "name": f"Hello, {name}!",
-        "max_score": 1,
-    }
-
-@tester.testcase(vec=list(_gen_vec(NAMES)))
-def test_echo(name):
-  expected = f"Hello, {name}!"
-  proc = subprocess.Popen([MAIN, name], stdout=subprocess.PIPE)
-  out = proc.communicate()[0]
-  rc = proc.returncode
-  if rc != 0:
-    return (0, f"Executable returned with Error Code {rc}")
-  if out.strip() != expected:
-    return (0, f"'{out}' != '{expected}'")
-  return (1, "Okay!")
+tester.testcase(ExTestcase("World", "Gradescope", "Tester", "Failure"))
 
 def post_test(_res):
   seen = []

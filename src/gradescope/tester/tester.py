@@ -80,7 +80,6 @@ class Tester:
 
   def _new_callable(self, target, hook=(lambda e: e)):
     def _inner(func):
-      nid = "prereq" if target == self._prerequisites else "test"
       name = Tester._callable_str(func)
       grdr = hook(func)
       target.append(grdr)
@@ -94,18 +93,18 @@ class Tester:
     return _inner
 
   @staticmethod
-  def _gen_hook(innerc, _tester_i_name, **kwargs):
+  def _gen_hook(innerc, iname, accepted_types, **kwargs):
     def _hook(func):
-      if not isinstance(func, Prereq):
+      if not isinstance(func, accepted_types):
         if not callable(func):
-          raise TypeError(f"Inner value on .{_tester_i_name} call is not callable")
+          raise TypeError(f"Inner value on .{iname} call is not callable")
         func = innerc(func, **kwargs)
       return func
     return _hook
 
   def prerequisite(self, *args, **kwargs):
     ''' '''
-    hook = Tester._gen_hook(FunctionPrereq, "prerequisite", **kwargs)
+    hook = Tester._gen_hook(FunctionPrereq, "prerequisite", (Prereq,), **kwargs)
     inner = self._new_callable(self._prerequisites, hook=hook)
     if len(args) == 0:
       return inner
@@ -119,8 +118,8 @@ class Tester:
       if len(kwargs) > 0:
         raise ValueError("Joint use of Vec with single spec def")
       hook = lambda f: TestcaseGroup(*(FunctionTestcase(f, **spec) for spec in vec))
-    else: 
-      hook = Tester._gen_hook(FunctionTestcase, "testcase", **kwargs)
+    else:
+      hook = Tester._gen_hook(FunctionTestcase, "testcase", (Testcase,), **kwargs)
 
     func = self._new_callable(self._testcases, hook=hook)
     if len(args) == 0:
@@ -130,7 +129,8 @@ class Tester:
     return func(*args)
 
   def leaderboard(self, *args, **kwargs):
-    hook = Tester._gen_hook(LbEntryFunction, "leaderboard", **kwargs)
+    ''' '''
+    hook = Tester._gen_hook(LbEntryFunction, "leaderboard", (), **kwargs)
     inner = self._new_callable(self._lbefactories, hook=hook)
     if len(args) == 0:
       return inner
@@ -177,31 +177,31 @@ class Tester:
     context = self._prerequisites.copy()
     context.insert(0, ChDir(paths.PATH_CODE))
     context.append(res.timer_context)
-    try:
-      with ExitStack() as stack:
+    with ExitStack() as stack:
+      try:
         for ccm in context:
           ccm.dispatch(res, stack)
         for test in self._testcases:
           test._run(res)
         for lbf in self._lbefactories:
           lbf.exec(res)
-    except PrereqError as exc:
-      return self._handle_exec_failure("".join(exc.args),
-                                       stdout=exc.stdout,
-                                       visibility=exc.visibility,
-                                       stdout_visibility=exc.stdout_visibility,
-                                      )
-    except AssertionError as exc:
-      return self._handle_exec_failure(str(exc),
-                                       exc=exc)
-    except:
-      self._failed = True
-      traceback.print_exc()
-      return Results(score=0,
-                     output="An internal error has occurred. " +
-                            "Please reach out to " +
-                            self._maintainer +
-                            " for assistance.",
-                     stdout_visibility=HIDDEN,
-                    )
+      except PrereqError as exc:
+        return self._handle_exec_failure("".join(exc.args),
+                                         stdout=exc.stdout,
+                                         visibility=exc.visibility,
+                                         stdout_visibility=exc.stdout_visibility,
+                                        )
+      except AssertionError as exc:
+        return self._handle_exec_failure(str(exc),
+                                         exc=exc)
+      except:
+        self._failed = True
+        traceback.print_exc()
+        return Results(score=0,
+                       output="An internal error has occurred. " +
+                              "Please reach out to " +
+                              self._maintainer +
+                              " for assistance.",
+                       stdout_visibility=HIDDEN,
+                      )
     return res

@@ -122,7 +122,7 @@ class Results:
   def add_tests(self, res):
     if not isinstance(res, list):
       if hasattr(res, '__iter__'):
-        res = list(res)
+        res = list(iter(res))
       else:
         res = [ res ]
     if any(map(lambda g: not isinstance(g, Grade), res)):
