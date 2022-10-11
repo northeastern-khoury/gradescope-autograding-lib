@@ -20,7 +20,11 @@ class Metadata:
                assignment_id=None,
                submission_method=None,
                users=None,
-               previous_submissions=None):
+               previous_submissions=None,
+               **kwargs):
+    if len(kwargs) > 0:
+      print(f"WARN: Got unexpected kwargs: {', '.join(kwargs.keys())}")
+
     if subid is None:
       raise TypeError("subid is None")
     if not isinstance(subid, int):

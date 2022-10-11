@@ -6,8 +6,15 @@ class User:
                uid=None,
                email=None,
                name=None,
+               sections=None,
                sid=None,
-               overrides=None):
+               overrides=None,
+               **kwargs):
+    if len(kwargs) > 0:
+      print(f"WARN: Got unexpected kwargs: {', '.join(kwargs.keys())}")
+
+    if sections is None:
+      sections = []
     try:
       uid = int(uid)
     except Exception as exc:
@@ -17,6 +24,8 @@ class User:
       raise TypeError("Email is not a str")
     if not isinstance(name, str):
       raise TypeError("Name is not a str")
+    if not isinstance(sections, list) and all(map(lambda e: isinstance(e, str), sections)):
+      raise TypeError("Sections is not list<str>")
     if sid is not None and not isinstance(sid, str):
       raise TypeError("SID is neither None or a str")
     if overrides is not None and not isinstance(overrides, dict):
@@ -41,6 +50,10 @@ class User:
     return self._name
 
   @property
+  def sections(self):
+    return ro(self._sections)
+
+  @property
   def sid(self):
     return self._sid
 
@@ -55,6 +68,7 @@ class User:
         "id":         self._id,
         "email":      self._email,
         "name":       self._name,
+        "sections":   self._sections,
         "sid":        self._sid,
         "assignment": self._overrides
     }

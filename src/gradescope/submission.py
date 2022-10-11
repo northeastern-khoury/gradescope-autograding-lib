@@ -9,7 +9,11 @@ class Submission:
   def __init__(self,
                submission_time=None,
                score=None,
-               results=None):
+               results=None,
+               **kwargs):
+    if len(kwargs) > 0:
+      print(f"WARN: Got unexpected kwargs: {', '.join(kwargs.keys())}")
+
     try:
       score = float(score)
     except Exception as exc:
