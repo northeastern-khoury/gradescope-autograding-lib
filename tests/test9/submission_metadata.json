@@ -1,0 +1,88 @@
+{
+  "id": 314159,
+  "users":
+  [
+    {
+      "id": 7,
+      "email": "t.sachleben@northeastern.edu",
+      "name": "Tariq Sachleben",
+      "sid": null,
+      "assignment":
+      {
+        "release_date": "2021-09-10T18:00:00.000000-07:00",
+        "due_date": "2021-09-14T18:00:00.000000-07:00",
+        "late_due_date": "2021-12-17T20:00:00.000000-08:00"
+      },
+      "sections":
+      [
+        "cs9999-gradescope-devel--sec-01-fall-2021"
+      ]
+    }
+  ],
+  "created_at": "2021-09-10T18:25:53.109082-07:00",
+  "assignment_id": null,
+  "assignment":
+  {
+    "id": 1,
+    "title": "Example",
+    "release_date": "2021-09-10T18:00:00.000000-07:00",
+    "due_date": "2021-09-14T18:00:00.000000-07:00",
+    "total_points": "100.0",
+    "course_id": -1,
+    "group_submission": false,
+    "group_size": null,
+    "late_due_date": "2021-12-17T20:00:00.000000-08:00",
+    "outline":
+    [
+      {
+        "id": 11489099,
+        "type": "ProgrammingQuestion",
+        "title": "Autograder",
+        "parent_id": null,
+        "weight": "0.0",
+        "content":
+        [],
+        "crop_rect_list":
+        [],
+        "index": 1
+      },
+      {
+        "id": 11489101,
+        "type": "FreeResponseQuestion",
+        "title": "Manual Grading",
+        "parent_id": null,
+        "weight": "100.0",
+        "content":
+        [],
+        "crop_rect_list":
+        [],
+        "index": 2
+      }
+    ]
+  },
+  "submission_method": "upload",
+  "previous_submissions":
+  [
+    {
+      "id": 169582609,
+      "submission_time": "2023-03-20T12:42:46.710823-07:00",
+      "score": "0.0",
+      "results":
+      {
+        "score": 0.0,
+        "tests":
+        [],
+        "output": "Your submission appears to be missing the files 'secret_flags'\nWe see: ['README.md', 'Makefile', '3700crawler', 'src']",
+        "extra_data": null,
+        "visibility": "visible",
+        "leaderboard":
+        [],
+        "output_format": null,
+        "execution_time": null,
+        "test_name_format": null,
+        "stdout_visibility": "hidden",
+        "test_output_format": null
+      }
+    }
+  ]
+}

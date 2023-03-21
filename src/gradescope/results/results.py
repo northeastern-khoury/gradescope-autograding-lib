@@ -33,8 +33,11 @@ class Results:
                stdout_visibility=HIDDEN,
                tests=None,
                leaderboard=None,
-               extra_data=None
-              ):
+               extra_data=None,
+               **kwargs):
+    if len(kwargs) > 0:
+      print(f"WARN: Got unexpected kwargs: {', '.join(kwargs.keys())}")
+
     if score is not None:
       try:
         score = float(score)
