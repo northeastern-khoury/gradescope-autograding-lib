@@ -43,5 +43,6 @@ class Submission:
       return None
     osv["submission_time"] = datetime.fromisoformat(osv["submission_time"])
     osv["score"] = float(osv["score"])
-    osv["results"] = Results.decode_json(osv["results"])
+    if "results" in osv:
+      osv["results"] = Results.decode_json(osv["results"])
     return Submission(**osv)
